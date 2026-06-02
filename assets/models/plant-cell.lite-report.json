@@ -1,0 +1,38 @@
+{
+  "source_original": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\3D\\1.植物细胞模型.glb",
+  "source_optimized": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\assets\\models\\plant-cell.optimized.glb",
+  "output": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\assets\\models\\plant-cell.lite.glb",
+  "elapsed_seconds": 15.53,
+  "target_faces": 700000,
+  "before": {
+    "vertices": 915884,
+    "faces": 1496666,
+    "has_wedge_tex_coord": true
+  },
+  "after": {
+    "pymeshlab_vertices": 517551,
+    "pymeshlab_faces": 700000,
+    "expanded_vertices": 517551,
+    "triangles": 700000,
+    "indices": 2100000,
+    "has_wedge_tex_coord": true,
+    "uv_min": 0.00037997961044311523,
+    "uv_max": 0.9996200203895569,
+    "position_min": [
+      -0.5725186467170715,
+      -0.4859600365161896,
+      -0.3283267617225647
+    ],
+    "position_max": [
+      0.5318862199783325,
+      0.529819667339325,
+      4.377891855256166e-06
+    ]
+  },
+  "source_original_bytes": 92806212,
+  "source_optimized_bytes": 48863316,
+  "output_bytes": 26556740,
+  "ratio_vs_original": 0.2862,
+  "ratio_vs_texture_optimized": 0.5435,
+  "encoding": "expanded wedge UVs, float positions/normals/UVs"
+}

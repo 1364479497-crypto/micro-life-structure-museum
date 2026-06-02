@@ -1,0 +1,58 @@
+{
+  "source": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\3D\\1.植物细胞模型.glb",
+  "output": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\assets\\models\\plant-cell.optimized.glb",
+  "source_bytes": 92806212,
+  "images": [
+    {
+      "index": 0,
+      "name": "texture_pbr_20250901_normal",
+      "original_bytes": 9026715,
+      "optimized_bytes": 387288,
+      "original_size": [
+        4096,
+        4096
+      ],
+      "optimized_size": [
+        2048,
+        2048
+      ],
+      "mimeType": "image/jpeg",
+      "quality": 88
+    },
+    {
+      "index": 1,
+      "name": "texture_pbr_20250901",
+      "original_bytes": 23190585,
+      "optimized_bytes": 783890,
+      "original_size": [
+        4096,
+        4096
+      ],
+      "optimized_size": [
+        2048,
+        2048
+      ],
+      "mimeType": "image/jpeg",
+      "quality": 86
+    },
+    {
+      "index": 2,
+      "name": "texture_pbr_20250901_metallic-texture_pbr_20250901_roughness",
+      "original_bytes": 13318641,
+      "optimized_bytes": 421872,
+      "original_size": [
+        4096,
+        4096
+      ],
+      "optimized_size": [
+        2048,
+        2048
+      ],
+      "mimeType": "image/jpeg",
+      "quality": 86
+    }
+  ],
+  "output_bytes": 48863316,
+  "ratio": 0.5265,
+  "saved_bytes": 43942896
+}

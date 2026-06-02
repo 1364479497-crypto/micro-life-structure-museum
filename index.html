@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>微观生命结构馆</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23fbf8ef'/%3E%3Ccircle cx='25' cy='35' r='13' fill='%235f9e48'/%3E%3Ccircle cx='39' cy='25' r='10' fill='%237454b8'/%3E%3Ccircle cx='43' cy='43' r='5' fill='%23c95362'/%3E%3C/svg%3E" />
+    <link rel="preload" href="./assets/models/plant-cell.lite.glb" as="fetch" type="model/gltf-binary" crossorigin="anonymous" fetchpriority="high" />
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./assets/vendor/three.module.js",
+          "three/addons/controls/OrbitControls.js": "./assets/vendor/OrbitControls.js",
+          "three/addons/loaders/GLTFLoader.js": "./assets/vendor/GLTFLoader.js"
+        }
+      }
+    </script>
+    <script src="./assets/vendor/lucide.min.js"></script>
+  </head>
+  <body>
+    <noscript>
+      <div class="noscript-warning">
+        当前浏览器禁用了 JavaScript。这个 3D 标本站必须允许 JavaScript 才能加载细胞列表、图标和模型。
+      </div>
+    </noscript>
+    <div id="boot-status" class="boot-status" hidden>JavaScript 已允许，但主模块还没有启动。</div>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="微观生命结构馆首页">
+          <span class="brand-mark">
+            <span class="cell-dot dot-a"></span>
+            <span class="cell-dot dot-b"></span>
+            <span class="cell-dot dot-c"></span>
+          </span>
+          <span>
+            <span class="brand-title">微观生命结构馆</span>
+            <span class="brand-kicker">用 3D 标本探索细胞与组织</span>
+          </span>
+        </a>
+        <nav class="topnav" aria-label="主导航">
+          <button class="nav-button is-active" type="button" title="标本馆" data-panel="gallery">
+            <i data-lucide="grid-3x3"></i>
+            <span>标本馆</span>
+          </button>
+          <button class="nav-button" type="button" title="知识库" data-panel="library">
+            <i data-lucide="library"></i>
+            <span>知识库</span>
+          </button>
+          <button class="nav-button" type="button" title="观察笔记" data-panel="notes">
+            <i data-lucide="book-open"></i>
+            <span>笔记</span>
+          </button>
+          <button class="icon-button" type="button" title="设置" data-panel="settings">
+            <i data-lucide="settings"></i>
+          </button>
+        </nav>
+      </header>
+
+      <main class="workspace">
+        <aside class="left-rail">
+          <section class="panel specimen-panel" aria-labelledby="specimen-heading">
+            <div class="panel-title-row">
+              <span class="panel-symbol">CELL</span>
+              <h2 id="specimen-heading">细胞类型</h2>
+            </div>
+            <div id="cell-list" class="cell-list"></div>
+          </section>
+
+          <section class="panel organelle-panel" aria-labelledby="organelle-heading">
+            <div class="panel-title-row">
+              <span class="panel-symbol">PART</span>
+              <h2 id="organelle-heading">结构索引</h2>
+            </div>
+            <div id="organelle-list" class="organelle-list"></div>
+          </section>
+        </aside>
+
+        <section class="center-column">
+          <section class="stage-panel" aria-labelledby="cell-title">
+            <div class="stage-header">
+              <div>
+                <p id="cell-type" class="cell-type">真核细胞</p>
+                <h1 id="cell-title">植物细胞</h1>
+              </div>
+              <div class="view-card" aria-label="观察模式">
+                <span class="mini-label">观察模式</span>
+                <div id="view-mode-group" class="segmented">
+                  <button type="button" class="mode-button is-active" data-view-mode="model" title="整体模型">
+                    <i data-lucide="box"></i>
+                  </button>
+                  <button type="button" class="mode-button" data-view-mode="layers" title="剖层模式">
+                    <i data-lucide="layers-3"></i>
+                  </button>
+                  <button type="button" class="mode-button" data-view-mode="labels" title="标签模式">
+                    <i data-lucide="circle-dot"></i>
+                  </button>
+                </div>
+                <label class="switch-row">
+                  <span>剖切</span>
+                  <input id="cross-section-toggle" type="checkbox" />
+                  <span class="switch-track"></span>
+                </label>
+              </div>
+            </div>
+
+            <div id="canvas-wrap" class="canvas-wrap is-loading-live-model">
+              <canvas id="cell-canvas"></canvas>
+              <img id="specimen-image" class="specimen-image" src="./assets/specimens/plant.png" alt="植物细胞 3D 标本" />
+              <div class="stage-loader" aria-hidden="true">
+                <div class="loader-orbit">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <span class="loader-copy">正在载入 3D 标本</span>
+              </div>
+              <div id="label-layer" class="label-layer"></div>
+              <div id="layer-mode-panel" class="layer-mode-panel" aria-label="图层材质模式">
+                <button class="layer-mode-chip is-active" type="button" data-layer-render="gray">灰模</button>
+                <button class="layer-mode-chip" type="button" data-layer-render="normal">法线</button>
+                <button class="layer-mode-chip" type="button" data-layer-render="relief">凹凸</button>
+              </div>
+            </div>
+
+            <div class="stage-actions" aria-label="模型操作">
+              <button id="rotate-button" type="button" class="tool-button is-active" title="自动旋转">
+                <i data-lucide="rotate-3d"></i>
+                <span>旋转</span>
+              </button>
+              <button id="isolate-button" type="button" class="tool-button" title="聚焦当前结构">
+                <i data-lucide="focus"></i>
+                <span>聚焦</span>
+              </button>
+              <button id="hide-button" type="button" class="tool-button" title="弱化其他结构">
+                <i data-lucide="eye-off"></i>
+                <span>弱化</span>
+              </button>
+              <button id="reset-button" type="button" class="tool-button" title="重置视角">
+                <i data-lucide="scan"></i>
+                <span>复位</span>
+              </button>
+              <span class="action-spacer"></span>
+              <button id="screenshot-button" type="button" class="tool-button" title="保存截图">
+                <i data-lucide="camera"></i>
+                <span>截图</span>
+              </button>
+              <button id="export-button" type="button" class="tool-button" title="导出模型">
+                <i data-lucide="package"></i>
+                <span>导出</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="below-grid">
+            <article class="panel micro-panel">
+              <div class="panel-title-row compact">
+                <h2>显微观察</h2>
+                <span id="micro-note" class="meta-chip">3 种视野</span>
+              </div>
+              <div id="micrograph-list" class="micrograph-list"></div>
+            </article>
+
+            <article class="panel compare-panel">
+              <div class="panel-title-row compact">
+                <h2>横向对比</h2>
+                <span class="meta-chip">VS</span>
+              </div>
+              <div id="compare-card" class="compare-card"></div>
+            </article>
+          </section>
+        </section>
+
+        <aside class="right-rail">
+          <section class="panel detail-panel" aria-labelledby="detail-heading">
+            <div class="panel-title-row">
+              <span class="panel-symbol">INFO</span>
+              <h2 id="detail-heading">结构详情</h2>
+              <button id="favorite-button" class="heart-button" type="button" title="收藏当前结构">
+                <i data-lucide="heart"></i>
+              </button>
+            </div>
+            <div class="detail-hero">
+              <div id="detail-icon" class="detail-icon"></div>
+              <div>
+                <h3 id="detail-name">细胞核</h3>
+                <p id="detail-subtitle">遗传信息中枢</p>
+              </div>
+            </div>
+            <dl id="detail-facts" class="fact-list"></dl>
+          </section>
+
+          <section class="panel note-panel">
+            <div class="panel-title-row">
+              <span class="panel-symbol">NOTE</span>
+              <h2>生物学札记</h2>
+            </div>
+            <p id="bio-note" class="bio-note"></p>
+            <p id="fun-fact" class="fun-fact"></p>
+          </section>
+
+          <section class="panel occurs-panel">
+            <div class="panel-title-row">
+              <span class="panel-symbol">MAP</span>
+              <h2>出现位置</h2>
+            </div>
+            <div id="occurs-visual" class="occurs-visual"></div>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
+    <aside id="workspace-drawer" class="workspace-drawer" hidden aria-live="polite" aria-label="功能面板">
+      <div class="drawer-shell">
+        <div id="drawer-content" class="drawer-content"></div>
+        <button id="drawer-close" class="drawer-close" type="button" title="关闭面板">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+    </aside>
+    <script type="module" src="./src/app.js"></script>
+    <script>
+      setTimeout(() => {
+        if (document.body.classList.contains("app-ready")) return;
+        const status = document.querySelector("#boot-status");
+        if (status) status.hidden = false;
+      }, 2500);
+    </script>
+  </body>
+</html>

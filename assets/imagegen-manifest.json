@@ -1,0 +1,58 @@
+{
+  "plant": {
+    "source": "C:\\Users\\YFD\\.codex\\generated_images\\019e165a-5353-7f51-b778-360a72308718\\ig_0f4473a0c4b9d8f7016a01a62228f8819187d9ae52a5a93dce.png",
+    "asset": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\assets\\specimens\\plant.png",
+    "size": [
+      1658,
+      949
+    ]
+  },
+  "immune": {
+    "source": "C:\\Users\\YFD\\.codex\\generated_images\\019e165a-5353-7f51-b778-360a72308718\\ig_0f4473a0c4b9d8f7016a01a68888a88191b8ee9e6fd96e2e12.png",
+    "asset": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\assets\\specimens\\immune.png",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  "neuron": {
+    "source": "C:\\Users\\YFD\\.codex\\generated_images\\019e165a-5353-7f51-b778-360a72308718\\ig_0f4473a0c4b9d8f7016a01a6ef5a408191a6be991baa4b4148.png",
+    "asset": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\assets\\specimens\\neuron.png",
+    "size": [
+      1770,
+      888
+    ]
+  },
+  "epithelial": {
+    "source": "C:\\Users\\YFD\\.codex\\generated_images\\019e165a-5353-7f51-b778-360a72308718\\ig_0f4473a0c4b9d8f7016a01a7404720819198d3413c217a0318.png",
+    "asset": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\assets\\specimens\\epithelial.png",
+    "size": [
+      1614,
+      975
+    ]
+  },
+  "bacteria": {
+    "source": "C:\\Users\\YFD\\.codex\\generated_images\\019e165a-5353-7f51-b778-360a72308718\\ig_0f4473a0c4b9d8f7016a01a7a06a688191b2fec23f8b8c1887.png",
+    "asset": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\assets\\specimens\\bacteria.png",
+    "size": [
+      1695,
+      928
+    ]
+  },
+  "animal": {
+    "source": "C:\\Users\\YFD\\.codex\\generated_images\\019e165a-5353-7f51-b778-360a72308718\\ig_0f4473a0c4b9d8f7016a01a7f1b0988191806272225744a035.png",
+    "asset": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\assets\\specimens\\animal.png",
+    "size": [
+      1672,
+      941
+    ]
+  },
+  "muscle": {
+    "source": "C:\\Users\\YFD\\.codex\\generated_images\\019e165a-5353-7f51-b778-360a72308718\\ig_0f4473a0c4b9d8f7016a01a850cb988191b13c4f7d54a9b646.png",
+    "asset": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\assets\\specimens\\muscle.png",
+    "size": [
+      1772,
+      887
+    ]
+  }
+}

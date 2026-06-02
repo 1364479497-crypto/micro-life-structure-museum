@@ -1,0 +1,38 @@
+{
+  "source_original": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\3D\\2.白细胞.glb",
+  "source_optimized": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\assets\\models\\immune-cell.optimized.glb",
+  "output": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\assets\\models\\immune-cell.lite.glb",
+  "elapsed_seconds": 20.86,
+  "target_faces": 700000,
+  "before": {
+    "vertices": 847938,
+    "faces": 1498874,
+    "has_wedge_tex_coord": true
+  },
+  "after": {
+    "pymeshlab_vertices": 421223,
+    "pymeshlab_faces": 699999,
+    "expanded_vertices": 421223,
+    "triangles": 699999,
+    "indices": 2099997,
+    "has_wedge_tex_coord": true,
+    "uv_min": 0.0003955466963816434,
+    "uv_max": 0.9995759725570679,
+    "position_min": [
+      -0.5510285496711731,
+      -0.3036710023880005,
+      -0.7544907331466675
+    ],
+    "position_max": [
+      0.45115771889686584,
+      0.23606522381305695,
+      8.589843673689757e-06
+    ]
+  },
+  "source_original_bytes": 97403100,
+  "source_optimized_bytes": 46958176,
+  "output_bytes": 23716912,
+  "ratio_vs_original": 0.2435,
+  "ratio_vs_texture_optimized": 0.5051,
+  "encoding": "expanded wedge UVs, float positions/normals/UVs"
+}

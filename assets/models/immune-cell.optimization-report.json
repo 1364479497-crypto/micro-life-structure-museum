@@ -1,0 +1,59 @@
+{
+  "source": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\3D\\2.白细胞.glb",
+  "output": "C:\\Users\\YFD\\Desktop\\codex\\0511 AI 应用测试\\assets\\models\\immune-cell.optimized.glb",
+  "source_bytes": 97403100,
+  "images": [
+    {
+      "index": 0,
+      "name": "texture_pbr_20250901_normal",
+      "original_bytes": 12541489,
+      "optimized_bytes": 432545,
+      "original_size": [
+        4096,
+        4096
+      ],
+      "optimized_size": [
+        2048,
+        2048
+      ],
+      "mimeType": "image/jpeg",
+      "quality": 88
+    },
+    {
+      "index": 1,
+      "name": "texture_pbr_20250901",
+      "original_bytes": 20664338,
+      "optimized_bytes": 638807,
+      "original_size": [
+        4096,
+        4096
+      ],
+      "optimized_size": [
+        2048,
+        2048
+      ],
+      "mimeType": "image/jpeg",
+      "quality": 86
+    },
+    {
+      "index": 2,
+      "name": "texture_pbr_20250901_metallic-texture_pbr_20250901_roughness",
+      "original_bytes": 19074778,
+      "optimized_bytes": 764334,
+      "original_size": [
+        4096,
+        4096
+      ],
+      "optimized_size": [
+        2048,
+        2048
+      ],
+      "mimeType": "image/jpeg",
+      "quality": 86
+    }
+  ],
+  "output_bytes": 46958176,
+  "ratio": 0.4821,
+  "saved_bytes": 50444924,
+  "elapsed_seconds": 1.85
+}

@@ -1,0 +1,24 @@
+# Runtime logs and local server state
+server.log
+server.err.log
+server.pid
+
+# Generated diagnostics and preview captures
+_screenshots/
+_video_analysis/
+_imagegen_contact_sheet.png
+
+# Local/editor noise
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+__pycache__/
+.vscode/
+.idea/
+
+# Dependency/build folders if the project later grows a bundler
+node_modules/
+dist/
+build/
+.vercel/
