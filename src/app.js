@@ -75,6 +75,12 @@ const cells = [
     image: "./assets/specimens/immune.png",
     thumbImage: "./assets/thumbs/immune.webp",
     modelUrl: "./assets/models/immune-cell.optimized.glb",
+    occursImage: "./assets/illustrations/occurs/immune.png",
+    microImages: [
+      "./assets/illustrations/micro/immune-blood-smear.png",
+      "./assets/illustrations/micro/immune-immunostain.png",
+      "./assets/illustrations/micro/immune-granule-detail.png"
+    ],
     title: "白细胞",
     type: "免疫细胞",
     accent: "#5d86c8",
@@ -93,6 +99,7 @@ const cells = [
         name: "分叶细胞核",
         tag: "多瓣核形态",
         color: "#7454b8",
+        image: "./assets/illustrations/organelle/immune-segmented-nucleus.png",
         facts: { "形态": "常见 2-5 个叶", "染色": "深紫色", "作用": "保存遗传信息" },
         note: "分叶核让白细胞在组织间移动时更灵活，是许多粒细胞的典型特征。"
       },
@@ -100,6 +107,7 @@ const cells = [
         name: "颗粒",
         tag: "酶与信号分子",
         color: "#c95362",
+        image: "./assets/illustrations/organelle/immune-granules.png",
         facts: { "内容物": "水解酶、抗菌肽", "释放": "受刺激后脱颗粒", "功能": "杀伤或调节免疫" },
         note: "颗粒中储存的分子能帮助白细胞快速处理病原体。"
       },
@@ -107,6 +115,7 @@ const cells = [
         name: "细胞膜",
         tag: "识别与黏附界面",
         color: "#b9bfcb",
+        image: "./assets/illustrations/organelle/immune-membrane.png",
         facts: { "受体": "趋化因子与抗原信号", "形态": "可变形", "任务": "迁移、吞噬、通信" },
         note: "白细胞的膜受体让它能追踪化学信号并贴附到血管壁。"
       }
@@ -116,6 +125,7 @@ const cells = [
     id: "neuron",
     image: "./assets/specimens/neuron.png",
     thumbImage: "./assets/thumbs/neuron.webp",
+    modelUrl: "./assets/models/neuron-cell.glb",
     title: "神经元",
     type: "神经细胞",
     accent: "#607bbb",
@@ -164,6 +174,7 @@ const cells = [
     id: "epithelial",
     image: "./assets/specimens/epithelial.png",
     thumbImage: "./assets/thumbs/epithelial.webp",
+    modelUrl: "./assets/models/epithelial-cell.glb",
     title: "上皮细胞",
     type: "人体组织细胞",
     accent: "#c66a82",
@@ -205,6 +216,7 @@ const cells = [
     id: "bacteria",
     image: "./assets/specimens/bacteria.png",
     thumbImage: "./assets/thumbs/bacteria.webp",
+    modelUrl: "./assets/models/bacteria-cell.glb",
     title: "细菌细胞",
     type: "原核细胞",
     accent: "#3aa889",
@@ -253,6 +265,7 @@ const cells = [
     id: "animal",
     image: "./assets/specimens/animal.png",
     thumbImage: "./assets/thumbs/animal.webp",
+    modelUrl: "./assets/models/animal-cell.glb",
     title: "动物细胞",
     type: "真核细胞",
     accent: "#a353a5",
@@ -301,6 +314,7 @@ const cells = [
     id: "muscle",
     image: "./assets/specimens/muscle.png",
     thumbImage: "./assets/thumbs/muscle.webp",
+    modelUrl: "./assets/models/muscle-cell.glb",
     title: "肌细胞",
     type: "肌纤维",
     accent: "#c95362",
