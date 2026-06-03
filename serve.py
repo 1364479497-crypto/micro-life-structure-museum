@@ -34,7 +34,11 @@ class StaticHandler(SimpleHTTPRequestHandler):
         return self.MIME_OVERRIDES.get(suffix, super().guess_type(path))
 
     def end_headers(self):
-        self.send_header("Cache-Control", "no-cache")
+        suffix = Path(self.path.split("?", 1)[0]).suffix.lower()
+        if suffix in {".glb", ".gltf", ".png", ".webp", ".jpg", ".jpeg"}:
+            self.send_header("Cache-Control", "public, max-age=3600")
+        else:
+            self.send_header("Cache-Control", "no-cache")
         super().end_headers()
 
 

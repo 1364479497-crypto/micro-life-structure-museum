@@ -126,6 +126,12 @@ const cells = [
     image: "./assets/specimens/neuron.png",
     thumbImage: "./assets/thumbs/neuron.webp",
     modelUrl: "./assets/models/neuron-cell.glb",
+    occursImage: "./assets/illustrations/occurs/neuron.png",
+    microImages: [
+      "./assets/illustrations/micro/neuron-nissl.png",
+      "./assets/illustrations/micro/neuron-network.png",
+      "./assets/illustrations/micro/neuron-axon-cross-section.png"
+    ],
     title: "神经元",
     type: "神经细胞",
     accent: "#607bbb",
@@ -144,6 +150,7 @@ const cells = [
         name: "轴突",
         tag: "信号高速路",
         color: "#5d86c8",
+        image: "./assets/illustrations/organelle/neuron-axon.png",
         facts: { "长度": "从毫米到超过一米", "包裹": "常见髓鞘", "方向": "多由胞体向外传递" },
         note: "轴突负责把动作电位传向突触末端，是神经通信的长距离线路。"
       },
@@ -151,6 +158,7 @@ const cells = [
         name: "胞体",
         tag: "代谢核心",
         color: "#7454b8",
+        image: "./assets/illustrations/organelle/neuron-soma.png",
         facts: { "包含": "细胞核与细胞器", "任务": "整合输入", "染色": "可见尼氏体" },
         note: "胞体维持神经元代谢，并把来自树突的信号整合成输出。"
       },
@@ -158,6 +166,7 @@ const cells = [
         name: "树突",
         tag: "接收输入",
         color: "#8fb2d0",
+        image: "./assets/illustrations/organelle/neuron-dendrite.png",
         facts: { "形态": "高度分支", "表面": "可有树突棘", "功能": "接收突触信号" },
         note: "树突像一片复杂的接收天线，决定神经元能听见多少邻近信号。"
       },
@@ -165,6 +174,7 @@ const cells = [
         name: "髓鞘",
         tag: "绝缘加速",
         color: "#c8d8e2",
+        image: "./assets/illustrations/organelle/neuron-myelin.png",
         facts: { "构成": "胶质细胞膜", "间隔": "郎飞结", "效果": "跳跃式传导" },
         note: "髓鞘让电信号沿轴突更快传播，也保护细长的轴突结构。"
       }
@@ -175,6 +185,12 @@ const cells = [
     image: "./assets/specimens/epithelial.png",
     thumbImage: "./assets/thumbs/epithelial.webp",
     modelUrl: "./assets/models/epithelial-cell.glb",
+    occursImage: "./assets/illustrations/occurs/epithelial.png",
+    microImages: [
+      "./assets/illustrations/micro/epithelial-columnar.png",
+      "./assets/illustrations/micro/epithelial-ciliated.png",
+      "./assets/illustrations/micro/epithelial-section.png"
+    ],
     title: "上皮细胞",
     type: "人体组织细胞",
     accent: "#c66a82",
@@ -193,6 +209,7 @@ const cells = [
         name: "纤毛",
         tag: "表面摆动结构",
         color: "#d88fa0",
+        image: "./assets/illustrations/organelle/epithelial-cilia.png",
         facts: { "位置": "细胞顶端", "运动": "协调摆动", "作用": "推动液体或黏液" },
         note: "纤毛像细胞表面的细小桨叶，在呼吸道中能把黏液向外推送。"
       },
@@ -200,6 +217,7 @@ const cells = [
         name: "细胞核",
         tag: "遗传控制区",
         color: "#7454b8",
+        image: "./assets/illustrations/organelle/epithelial-nucleus.png",
         facts: { "位置": "常偏基底侧", "形态": "椭圆或圆形", "可见": "染色后明显" },
         note: "上皮细胞核的位置和排列能帮助判断组织类型与健康状态。"
       },
@@ -207,6 +225,7 @@ const cells = [
         name: "紧密连接",
         tag: "细胞间封条",
         color: "#e1b15d",
+        image: "./assets/illustrations/organelle/epithelial-tight-junction.png",
         facts: { "位置": "相邻细胞之间", "功能": "限制物质旁路", "意义": "维持屏障" },
         note: "紧密连接让上皮层成为真正的屏障，控制哪些物质可以穿过。"
       }
@@ -217,6 +236,12 @@ const cells = [
     image: "./assets/specimens/bacteria.png",
     thumbImage: "./assets/thumbs/bacteria.webp",
     modelUrl: "./assets/models/bacteria-cell.glb",
+    occursImage: "./assets/illustrations/occurs/bacteria.png",
+    microImages: [
+      "./assets/illustrations/micro/bacteria-smear.png",
+      "./assets/illustrations/micro/bacteria-gram.png",
+      "./assets/illustrations/micro/bacteria-sem.png"
+    ],
     title: "细菌细胞",
     type: "原核细胞",
     accent: "#3aa889",
@@ -235,6 +260,7 @@ const cells = [
         name: "拟核",
         tag: "裸露基因组",
         color: "#7454b8",
+        image: "./assets/illustrations/organelle/bacteria-nucleoid.png",
         facts: { "膜结构": "无核膜", "形态": "盘曲 DNA 区域", "功能": "遗传信息储存" },
         note: "拟核不是细胞核，而是原核细胞 DNA 高度盘曲后聚集的区域。"
       },
@@ -242,6 +268,7 @@ const cells = [
         name: "细胞壁",
         tag: "形态支撑",
         color: "#3aa889",
+        image: "./assets/illustrations/organelle/bacteria-cell-wall.png",
         facts: { "主要成分": "肽聚糖", "作用": "抗渗透压", "染色": "革兰染色相关" },
         note: "细胞壁决定许多细菌的形状，也是不少抗生素作用的目标。"
       },
@@ -249,6 +276,7 @@ const cells = [
         name: "鞭毛",
         tag: "运动推进器",
         color: "#d08a3c",
+        image: "./assets/illustrations/organelle/bacteria-flagellum.png",
         facts: { "位置": "可单端或周生", "驱动": "旋转运动", "功能": "趋化移动" },
         note: "鞭毛通过旋转推动细菌在液体环境中移动。"
       },
@@ -256,6 +284,7 @@ const cells = [
         name: "核糖体",
         tag: "蛋白质工坊",
         color: "#e1b15d",
+        image: "./assets/illustrations/organelle/bacteria-ribosome.png",
         facts: { "大小": "70S", "分布": "细胞质中", "功能": "翻译蛋白质" },
         note: "核糖体读取 mRNA 信息，把氨基酸组装成蛋白质。"
       }
@@ -266,6 +295,12 @@ const cells = [
     image: "./assets/specimens/animal.png",
     thumbImage: "./assets/thumbs/animal.webp",
     modelUrl: "./assets/models/animal-cell.glb",
+    occursImage: "./assets/illustrations/occurs/animal.png",
+    microImages: [
+      "./assets/illustrations/micro/animal-tissue.png",
+      "./assets/illustrations/micro/animal-fluorescence.png",
+      "./assets/illustrations/micro/animal-ultrastructure.png"
+    ],
     title: "动物细胞",
     type: "真核细胞",
     accent: "#a353a5",
@@ -284,6 +319,7 @@ const cells = [
         name: "细胞核",
         tag: "遗传控制中心",
         color: "#7454b8",
+        image: "./assets/illustrations/organelle/animal-nucleus.png",
         facts: { "位置": "常靠近中央", "结构": "核膜与核仁", "功能": "调控基因表达" },
         note: "动物细胞核管理遗传信息，是细胞命运和功能调控的重要节点。"
       },
@@ -291,6 +327,7 @@ const cells = [
         name: "线粒体",
         tag: "能量转换器",
         color: "#df7e43",
+        image: "./assets/illustrations/organelle/animal-mitochondrion.png",
         facts: { "功能": "产生 ATP", "特点": "双层膜", "数量": "高耗能细胞更多" },
         note: "线粒体数量会随细胞能量需求改变，肌肉和神经细胞中尤其重要。"
       },
@@ -298,6 +335,7 @@ const cells = [
         name: "内质网",
         tag: "合成与运输网络",
         color: "#6b76c5",
+        image: "./assets/illustrations/organelle/animal-er.png",
         facts: { "类型": "粗面与光面", "任务": "蛋白质和脂质合成", "连接": "常与核膜连续" },
         note: "内质网形成广阔的膜网络，把合成、折叠和运输连接起来。"
       },
@@ -305,6 +343,7 @@ const cells = [
         name: "溶酶体",
         tag: "细胞回收站",
         color: "#d2a849",
+        image: "./assets/illustrations/organelle/animal-lysosome.png",
         facts: { "环境": "酸性", "内容": "多种水解酶", "功能": "降解与回收" },
         note: "溶酶体能分解老旧细胞器和外来颗粒，维持细胞内部清洁。"
       }
@@ -315,6 +354,12 @@ const cells = [
     image: "./assets/specimens/muscle.png",
     thumbImage: "./assets/thumbs/muscle.webp",
     modelUrl: "./assets/models/muscle-cell.glb",
+    occursImage: "./assets/illustrations/occurs/muscle.png",
+    microImages: [
+      "./assets/illustrations/micro/muscle-striated.png",
+      "./assets/illustrations/micro/muscle-bundle.png",
+      "./assets/illustrations/micro/muscle-sarcomere.png"
+    ],
     title: "肌细胞",
     type: "肌纤维",
     accent: "#c95362",
@@ -333,6 +378,7 @@ const cells = [
         name: "肌原纤维",
         tag: "收缩线程",
         color: "#c95362",
+        image: "./assets/illustrations/organelle/muscle-myofibril.png",
         facts: { "直径": "约 1 微米", "排列": "平行成束", "可见": "呈横纹" },
         note: "肌原纤维由重复肌节构成，是肌细胞真正产生收缩力的结构。"
       },
@@ -340,6 +386,7 @@ const cells = [
         name: "肌膜",
         tag: "兴奋传导界面",
         color: "#d7a680",
+        image: "./assets/illustrations/organelle/muscle-sarcolemma.png",
         facts: { "位置": "细胞外层", "作用": "传播电信号", "关联": "T 管系统" },
         note: "肌膜把神经输入转换为肌细胞内部的兴奋信号。"
       },
@@ -347,6 +394,7 @@ const cells = [
         name: "线粒体",
         tag: "耐力能源",
         color: "#df7e43",
+        image: "./assets/illustrations/organelle/muscle-mitochondrion.png",
         facts: { "分布": "肌原纤维之间", "功能": "供应 ATP", "数量": "耐力肌更多" },
         note: "运动时肌细胞能量需求很高，线粒体负责持续供应 ATP。"
       }
@@ -366,7 +414,8 @@ const state = {
   favorite: false,
   activePanel: "gallery",
   activeMicroIndex: 0,
-  transition: 1
+  transition: 1,
+  isStageSwitching: false
 };
 
 const els = {
@@ -388,6 +437,8 @@ const els = {
   layerModePanel: document.querySelector("#layer-mode-panel"),
   specimenImage: document.querySelector("#specimen-image"),
   canvasWrap: document.querySelector("#canvas-wrap"),
+  stagePrevButton: document.querySelector("#stage-prev-button"),
+  stageNextButton: document.querySelector("#stage-next-button"),
   crossToggle: document.querySelector("#cross-section-toggle"),
   rotateButton: document.querySelector("#rotate-button"),
   isolateButton: document.querySelector("#isolate-button"),
@@ -405,8 +456,8 @@ const els = {
 
 const wrap = document.querySelector("#canvas-wrap");
 const canvas = document.querySelector("#cell-canvas");
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 renderer.setClearColor(0x000000, 0);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -442,6 +493,10 @@ let rebuildStart = performance.now();
 let modelRequestId = 0;
 const gltfLoader = new GLTFLoader();
 gltfLoader.setCrossOrigin("anonymous");
+const modelCache = new Map();
+const preloadQueue = [];
+const queuedPreloadIds = new Set();
+let preloadActive = false;
 const splitLayerCount = 4;
 const splitNormalMatrix = new THREE.Matrix3();
 const defaultCameraPosition = new THREE.Vector3(0, 5.8, 6.2);
@@ -458,6 +513,13 @@ const cameraTween = {
   toPosition: new THREE.Vector3(),
   toTarget: new THREE.Vector3()
 };
+const stageSwitch = {
+  phase: "idle",
+  direction: 1,
+  pendingIndex: null,
+  startedAt: 0,
+  duration: 560
+};
 let projectedLabelPoints = [];
 const plantLabelAnchors = [
   [0.08, 0.34, -0.04],
@@ -469,9 +531,37 @@ const plantLabelAnchors = [
 const labelAnchorPresets = {
   plant: plantLabelAnchors,
   immune: [
-    [-0.15, 0.09, -0.28],
-    [-0.247, -0.043, -0.16],
-    [0.161, 0.268, 0.12]
+    [0.01, 0.12, -0.2],
+    [0.12, 0.1, -0.17],
+    [-0.32, -0.17, -0.18]
+  ],
+  neuron: [
+    [0.2, 0.01, -0.12],
+    [-0.22, 0.03, -0.14],
+    [-0.36, 0.1, -0.14],
+    [0.36, 0.04, -0.12]
+  ],
+  epithelial: [
+    [0.02, 0.3, -0.24],
+    [-0.02, -0.12, -0.36],
+    [0.24, 0.1, -0.28]
+  ],
+  bacteria: [
+    [0, 0.05, -0.13],
+    [-0.49, 0.07, -0.13],
+    [0.53, -0.02, -0.13],
+    [0.18, -0.02, -0.13]
+  ],
+  animal: [
+    [0.16, 0.1, -0.12],
+    [-0.22, 0.05, -0.12],
+    [-0.02, 0.02, -0.12],
+    [0.3, -0.16, -0.12]
+  ],
+  muscle: [
+    [0, 0.08, -0.08],
+    [-0.1, -0.28, -0.12],
+    [-0.04, -0.04, -0.08]
   ]
 };
 const reusable = {
@@ -515,6 +605,181 @@ function setStoredNote(value) {
   }
 }
 
+function scheduleIdleWork(callback, timeout = 1800) {
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(callback, { timeout });
+    return;
+  }
+  window.setTimeout(callback, 260);
+}
+
+function resetPreparedModelVisualState(group) {
+  if (!group) return;
+  group.visible = true;
+  group.position.set(0, 0, 0);
+  group.rotation.set(0, 0, 0);
+
+  const splitRoot = group.userData.splitRoot;
+  if (splitRoot) {
+    splitRoot.visible = false;
+    splitRoot.userData.progress = 0;
+    (splitRoot.userData.layers || []).forEach((layer) => {
+      const base = layer.userData.basePosition;
+      if (base) layer.position.copy(base);
+    });
+  }
+
+  if (group.userData.content) group.userData.content.visible = true;
+  group.userData.splitActive = false;
+}
+
+function detachCurrentModel({ dispose = false } = {}) {
+  if (!modelGroup) return;
+  const previous = modelGroup;
+  modelRoot.remove(previous);
+  modelGroup = null;
+  if (dispose && !previous.userData.cachedModel) disposeSceneObject(previous);
+}
+
+function attachPreparedModel(group, requestId) {
+  if (requestId !== modelRequestId) return false;
+  if (group.parent) group.parent.remove(group);
+  resetPreparedModelVisualState(group);
+  modelGroup = group;
+  modelRoot.add(group);
+  els.canvasWrap.classList.add("has-live-model");
+  els.canvasWrap.classList.remove("is-loading-live-model");
+  rebuildStart = performance.now();
+  startStageEnterIfPending();
+  updateStageModeState();
+  scheduleNearbyModelPreloads(state.cellIndex);
+  return true;
+}
+
+function loadPreparedModel(cell) {
+  const cached = modelCache.get(cell.id);
+  if (cached?.group) return Promise.resolve(cached.group);
+  if (cached?.promise) return cached.promise;
+
+  if (!cell.modelUrl) {
+    const generated = builders[cell.id]();
+    generated.userData.cachedModel = true;
+    generated.userData.cacheKey = cell.id;
+    modelCache.set(cell.id, { group: generated, promise: null });
+    return Promise.resolve(generated);
+  }
+
+  const promise = new Promise((resolve, reject) => {
+    gltfLoader.load(
+      cell.modelUrl,
+      (gltf) => {
+        try {
+          const loadedGroup = prepareLoadedModel(gltf.scene, cell);
+          loadedGroup.userData.cachedModel = true;
+          loadedGroup.userData.cacheKey = cell.id;
+          modelCache.set(cell.id, { group: loadedGroup, promise: null });
+          resolve(loadedGroup);
+        } catch (error) {
+          disposeSceneObject(gltf.scene);
+          modelCache.delete(cell.id);
+          reject(error);
+        }
+      },
+      undefined,
+      (error) => {
+        modelCache.delete(cell.id);
+        reject(error);
+      }
+    );
+  });
+
+  modelCache.set(cell.id, { group: null, promise });
+  return promise;
+}
+
+function queueModelPreload(cell) {
+  if (!cell?.modelUrl || cell.id === currentCell().id) return;
+  if (queuedPreloadIds.has(cell.id)) return;
+  const cached = modelCache.get(cell.id);
+  if (cached?.group || cached?.promise) return;
+  queuedPreloadIds.add(cell.id);
+  preloadQueue.push(cell);
+}
+
+function pumpModelPreloadQueue() {
+  if (preloadActive || !preloadQueue.length) return;
+  scheduleIdleWork(() => {
+    const cell = preloadQueue.shift();
+    if (!cell) return;
+    queuedPreloadIds.delete(cell.id);
+    const cached = modelCache.get(cell.id);
+    if (cached?.group || cached?.promise) {
+      pumpModelPreloadQueue();
+      return;
+    }
+    preloadActive = true;
+    loadPreparedModel(cell)
+      .catch((error) => console.warn(`Preload failed for ${cell.title}`, error))
+      .finally(() => {
+        preloadActive = false;
+        window.setTimeout(pumpModelPreloadQueue, 900);
+      });
+  }, 2200);
+}
+
+function scheduleNearbyModelPreloads(centerIndex = state.cellIndex) {
+  [1, -1, 2, -2, 3, -3].forEach((offset) => {
+    const index = normalizeCellIndex(centerIndex + offset);
+    if (index !== centerIndex) queueModelPreload(cells[index]);
+  });
+  pumpModelPreloadQueue();
+}
+
+function normalizeCellIndex(index) {
+  return (index + cells.length) % cells.length;
+}
+
+function directionForCellIndex(nextIndex) {
+  const normalized = normalizeCellIndex(nextIndex);
+  const forward = (normalized - state.cellIndex + cells.length) % cells.length;
+  const backward = (state.cellIndex - normalized + cells.length) % cells.length;
+  return forward <= backward ? 1 : -1;
+}
+
+function updateCellSwitchControls() {
+  els.stagePrevButton.disabled = state.isStageSwitching;
+  els.stageNextButton.disabled = state.isStageSwitching;
+  els.canvasWrap.classList.toggle("is-stage-switching", state.isStageSwitching);
+  els.cellList.querySelectorAll(".cell-card").forEach((button) => {
+    button.disabled = state.isStageSwitching;
+  });
+}
+
+function applyCellSwitch(index, options = {}) {
+  state.cellIndex = normalizeCellIndex(index);
+  resetObservationState();
+  updateAll();
+  if (options.toast !== false) showToast(`已切换到${currentCell().title}`);
+}
+
+function switchCellTo(index, options = {}) {
+  const nextIndex = normalizeCellIndex(index);
+  if (nextIndex === state.cellIndex || state.isStageSwitching) return;
+  const direction = options.direction || directionForCellIndex(nextIndex);
+  if (!modelGroup) {
+    applyCellSwitch(nextIndex, options);
+    return;
+  }
+  state.isStageSwitching = true;
+  stageSwitch.phase = "exit";
+  stageSwitch.direction = direction;
+  stageSwitch.pendingIndex = nextIndex;
+  stageSwitch.startedAt = performance.now();
+  els.canvasWrap.dataset.switchDirection = direction > 0 ? "next" : "prev";
+  updateCellSwitchControls();
+  updateToolbar();
+}
+
 function selectPart(partName, options = {}) {
   if (!partName || partName === state.selectedPart) {
     updateToolbar();
@@ -532,6 +797,18 @@ function selectPart(partName, options = {}) {
   renderActivePanel();
   if (options.focus) focusSelectedPart();
   if (options.toast !== false) showToast(`已定位到${partName}`);
+}
+
+function resetObservationState(options = {}) {
+  if (options.resetPart !== false) state.selectedPart = currentCell().defaultPart;
+  state.viewMode = "model";
+  state.layerRenderMode = "gray";
+  state.crossSection = false;
+  state.autoRotate = true;
+  state.isolate = false;
+  state.dimOthers = false;
+  if (options.resetMicro !== false) state.activeMicroIndex = 0;
+  resetCamera();
 }
 
 function setTheme(cell) {
@@ -1023,6 +1300,8 @@ function createLabelAnchors(cell) {
 function updateStageModeState() {
   const isLayerMode = state.viewMode === "layers";
   const isLabelMode = state.viewMode === "labels";
+  controls.enableRotate = !state.crossSection && !state.isStageSwitching;
+  controls.enablePan = !state.isStageSwitching;
   els.canvasWrap.classList.toggle("is-layer-mode", isLayerMode);
   els.canvasWrap.classList.toggle("is-label-mode", isLabelMode);
   els.canvasWrap.classList.toggle("is-cross-section", state.crossSection);
@@ -1035,7 +1314,7 @@ function updateStageModeState() {
   positionLabels();
 }
 
-function prepareLoadedModel(model) {
+function prepareLoadedModel(model, cell = currentCell()) {
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
@@ -1055,67 +1334,79 @@ function prepareLoadedModel(model) {
   const wrapper = new THREE.Group();
   const orientationRoot = new THREE.Group();
   orientationRoot.rotation.set(-0.04, -0.46, 0.02);
-  wrapper.userData.stageScale = maxDim > 0 ? 4.48 / maxDim : 1;
+  const splitRoot = createSplitModel(model);
+  orientationRoot.add(model);
+  orientationRoot.add(splitRoot);
+  const orientedBox = new THREE.Box3().setFromObject(orientationRoot);
+  const orientedSize = orientedBox.getSize(new THREE.Vector3());
+  const orientedMaxDim = Math.max(orientedSize.x, orientedSize.y, orientedSize.z, maxDim);
+  const orientedSphere = orientedBox.getBoundingSphere(new THREE.Sphere());
+  wrapper.userData.stageScale = orientedMaxDim > 0 ? 4.05 / orientedMaxDim : 1;
+  wrapper.userData.stageRadius = Math.max(orientedSphere.radius, orientedMaxDim * 0.5, 1);
   wrapper.userData.loadedGltf = true;
   wrapper.userData.splitCenterY = center.y;
   wrapper.userData.splitBoundsY = model.userData.splitBoundsY;
   wrapper.userData.content = model;
   wrapper.userData.orientationRoot = orientationRoot;
-  wrapper.userData.splitRoot = createSplitModel(model);
-  wrapper.userData.labelAnchors = createLabelAnchors(currentCell());
+  wrapper.userData.splitRoot = splitRoot;
+  wrapper.userData.labelAnchors = createLabelAnchors(cell);
   model.add(wrapper.userData.labelAnchors);
-  orientationRoot.add(model);
-  orientationRoot.add(wrapper.userData.splitRoot);
   wrapper.add(orientationRoot);
   return wrapper;
+}
+
+function startStageEnterIfPending() {
+  if (stageSwitch.phase !== "waiting-enter" || !modelGroup) return;
+  stageSwitch.phase = "enter";
+  stageSwitch.startedAt = performance.now();
+  modelGroup.position.set(stageSwitch.direction * getStageSlideDistance(getTargetStageScale()), 0, 0);
+  modelGroup.rotation.z = 0;
+}
+
+function getTargetStageScale(group = modelGroup) {
+  if (!group) return 1;
+  return group.userData.stageScale || (currentCell().id === "neuron" ? 0.92 : 1.02);
+}
+
+function getStageSlideDistance(baseScale = getTargetStageScale()) {
+  const targetDistance = camera.position.distanceTo(controls.target);
+  const visibleHeight = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * targetDistance;
+  const visibleWidth = visibleHeight * camera.aspect;
+  const modelRadius = (modelGroup?.userData.stageRadius || 2.2) * baseScale;
+  return Math.max(visibleWidth * 0.5 + modelRadius + 1.4, 7.2);
 }
 
 function rebuildModel() {
   const requestId = ++modelRequestId;
   const cell = currentCell();
-  if (modelGroup) {
-    modelRoot.remove(modelGroup);
-    disposeSceneObject(modelGroup);
-  }
-  modelGroup = null;
+  detachCurrentModel({ dispose: true });
   els.canvasWrap.classList.remove("has-live-model");
   els.canvasWrap.classList.toggle("is-loading-live-model", Boolean(cell.modelUrl));
   rebuildStart = performance.now();
 
   if (cell.modelUrl) {
-    gltfLoader.load(
-      cell.modelUrl,
-      (gltf) => {
-        if (requestId !== modelRequestId) {
-          disposeSceneObject(gltf.scene);
-          return;
-        }
-        const loadedGroup = prepareLoadedModel(gltf.scene);
-        modelGroup = loadedGroup;
-        modelRoot.add(loadedGroup);
-        els.canvasWrap.classList.add("has-live-model");
-        els.canvasWrap.classList.remove("is-loading-live-model");
-        rebuildStart = performance.now();
-        updateStageModeState();
-      },
-      undefined,
-      (error) => {
+    loadPreparedModel(cell)
+      .then((loadedGroup) => {
+        attachPreparedModel(loadedGroup, requestId);
+      })
+      .catch((error) => {
         console.warn("GLB load failed, falling back to generated specimen image.", error);
         if (requestId === modelRequestId) {
           els.canvasWrap.classList.remove("has-live-model");
           els.canvasWrap.classList.remove("is-loading-live-model");
+          state.isStageSwitching = false;
+          stageSwitch.phase = "idle";
+          stageSwitch.pendingIndex = null;
+          updateCellSwitchControls();
+          updateToolbar();
         }
-      }
-    );
+      });
     return;
   }
 
-  modelGroup = builders[cell.id]();
-  modelGroup.scale.setScalar(0.72);
-  modelRoot.add(modelGroup);
-  els.canvasWrap.classList.add("has-live-model");
-  els.canvasWrap.classList.remove("is-loading-live-model");
-  updateStageModeState();
+  loadPreparedModel(cell).then((loadedGroup) => {
+    attachPreparedModel(loadedGroup, requestId);
+  });
 }
 
 function updateModelMaterials() {
@@ -1168,7 +1459,7 @@ function updateModelMaterials() {
 
 function renderCellList() {
   els.cellList.innerHTML = cells.map((cell, index) => `
-    <button class="cell-card ${index === state.cellIndex ? "is-active" : ""}" type="button" data-cell-index="${index}" style="--accent:${cell.accent}">
+    <button class="cell-card ${index === state.cellIndex ? "is-active" : ""}" type="button" data-cell-index="${index}" style="--accent:${cell.accent}" ${state.isStageSwitching ? "disabled" : ""}>
       <span class="thumb ${cell.thumb} has-image"><img src="${cell.thumbImage}" alt="${cell.title}" loading="eager"></span>
       <span>
         <span class="cell-name">${cell.title}</span>
@@ -1179,15 +1470,10 @@ function renderCellList() {
   `).join("");
   els.cellList.querySelectorAll(".cell-card").forEach((button) => {
     button.addEventListener("click", () => {
-      state.cellIndex = Number(button.dataset.cellIndex);
-      state.selectedPart = currentCell().defaultPart;
-      state.isolate = false;
-      state.dimOthers = false;
-      state.activeMicroIndex = 0;
-      updateAll();
-      showToast(`已切换到${currentCell().title}`);
+      switchCellTo(Number(button.dataset.cellIndex));
     });
   });
+  updateCellSwitchControls();
 }
 
 function renderOrganelleList() {
@@ -1204,7 +1490,6 @@ function renderOrganelleList() {
   els.organelleList.querySelectorAll(".organelle-button").forEach((button) => {
     button.addEventListener("click", () => {
       state.viewMode = "labels";
-      state.autoRotate = false;
       selectPart(button.dataset.part, { focus: false });
     });
   });
@@ -1470,11 +1755,7 @@ function bindPanelEvents() {
   els.drawerContent.querySelectorAll("[data-gallery-cell]").forEach((button) => {
     button.addEventListener("click", () => {
       state.cellIndex = Number(button.dataset.galleryCell);
-      state.selectedPart = currentCell().defaultPart;
-      state.activeMicroIndex = 0;
-      state.crossSection = false;
-      state.dimOthers = false;
-      state.isolate = false;
+      resetObservationState();
       updateAll();
       openPanel("gallery");
       showToast(`已切换到${currentCell().title}`);
@@ -1522,7 +1803,6 @@ function bindPanelEvents() {
       const action = button.dataset.action;
       if (action === "show-labels") {
         state.viewMode = "labels";
-        state.autoRotate = false;
         updateToolbar();
         updateLabels();
       }
@@ -1554,19 +1834,13 @@ function bindPanelEvents() {
         const index = cells.findIndex((item) => item.id === other.id);
         if (index >= 0) {
           state.cellIndex = index;
-          state.selectedPart = currentCell().defaultPart;
-          state.activeMicroIndex = 0;
+          resetObservationState();
           updateAll();
           openPanel("compare");
         }
       }
       if (action === "reset-view") {
-        state.viewMode = "model";
-        state.crossSection = false;
-        state.dimOthers = false;
-        state.isolate = false;
-        state.autoRotate = true;
-        resetCamera();
+        resetObservationState({ resetPart: false, resetMicro: false });
         updateToolbar();
         renderActivePanel();
       }
@@ -1599,7 +1873,6 @@ function updateLabels() {
     label.addEventListener("click", () => {
       const part = cell.parts[Number(label.dataset.labelIndex)];
       if (!part) return;
-      state.autoRotate = false;
       selectPart(part.name, { focus: false });
     });
   });
@@ -1696,12 +1969,15 @@ function updateAll() {
   updateSpecimenImage();
   rebuildModel();
   updateToolbar();
+  updateCellSwitchControls();
   renderActivePanel();
   updateNavState();
   if (window.lucide) window.lucide.createIcons();
 }
 
 function updateToolbar() {
+  updateStageModeState();
+  updateCellSwitchControls();
   els.crossToggle.checked = state.crossSection;
   els.rotateButton.classList.toggle("is-active", state.autoRotate);
   els.isolateButton.classList.toggle("is-active", state.isolate);
@@ -1710,7 +1986,6 @@ function updateToolbar() {
   document.querySelectorAll(".mode-button").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.viewMode === state.viewMode);
   });
-  updateStageModeState();
 }
 
 function resetCamera() {
@@ -1761,7 +2036,6 @@ function pickPartFromStage(event) {
   });
   if (!best) return;
   state.viewMode = "labels";
-  state.autoRotate = false;
   selectPart(best.part.name, { focus: false });
 }
 
@@ -1812,7 +2086,6 @@ function bindEvents() {
   document.querySelectorAll(".mode-button").forEach((button) => {
     button.addEventListener("click", () => {
       state.viewMode = button.dataset.viewMode;
-      if (state.viewMode === "labels") state.autoRotate = false;
       updateToolbar();
       updateLabels();
       showToast(button.title);
@@ -1843,12 +2116,19 @@ function bindEvents() {
     updateToolbar();
   });
 
+  els.stagePrevButton.addEventListener("click", () => {
+    switchCellTo(state.cellIndex - 1, { direction: -1 });
+  });
+
+  els.stageNextButton.addEventListener("click", () => {
+    switchCellTo(state.cellIndex + 1, { direction: 1 });
+  });
+
   els.isolateButton.addEventListener("click", () => {
     state.isolate = !state.isolate;
     if (state.isolate) {
       state.dimOthers = false;
       state.viewMode = "labels";
-      state.autoRotate = false;
       focusSelectedPart();
       showToast(`已聚焦${selectedPartData().name}`);
     } else {
@@ -1863,7 +2143,6 @@ function bindEvents() {
     if (state.dimOthers) {
       state.isolate = false;
       state.viewMode = "labels";
-      state.autoRotate = false;
       focusSelectedPart();
       showToast("已弱化背景并显示结构标注");
     } else {
@@ -1874,13 +2153,7 @@ function bindEvents() {
   });
 
   els.resetButton.addEventListener("click", () => {
-    state.viewMode = "model";
-    state.crossSection = false;
-    state.isolate = false;
-    state.dimOthers = false;
-    state.layerRenderMode = "gray";
-    state.autoRotate = true;
-    resetCamera();
+    resetObservationState({ resetPart: false, resetMicro: false });
     updateToolbar();
     showToast("视角和观察模式已复位");
   });
@@ -1888,6 +2161,10 @@ function bindEvents() {
   els.screenshotButton.addEventListener("click", () => {
     const link = document.createElement("a");
     link.download = `${currentCell().title}-观察截图.png`;
+    updateCameraTween(performance.now());
+    controls.update();
+    positionLabels();
+    renderer.render(scene, camera);
     link.href = renderer.domElement.toDataURL("image/png");
     link.click();
     showToast("截图已生成");
@@ -1957,15 +2234,87 @@ function updateSplitAnimation() {
   updateSplitPlanes();
 }
 
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function easeInCubic(t) {
+  return t * t * t;
+}
+
+function finishStageEnter() {
+  if (modelGroup) {
+    modelGroup.position.set(0, 0, 0);
+    modelGroup.rotation.x = 0;
+    modelGroup.rotation.z = 0;
+  }
+  state.isStageSwitching = false;
+  stageSwitch.phase = "idle";
+  stageSwitch.pendingIndex = null;
+  els.canvasWrap.removeAttribute("data-switch-direction");
+  updateCellSwitchControls();
+  updateToolbar();
+}
+
+function finishStageExit() {
+  const nextIndex = stageSwitch.pendingIndex;
+  const direction = stageSwitch.direction;
+  stageSwitch.phase = "waiting-enter";
+  stageSwitch.startedAt = performance.now();
+  state.cellIndex = nextIndex;
+  resetObservationState();
+  stageSwitch.direction = direction;
+  updateAll();
+  showToast(`已切换到${currentCell().title}`);
+}
+
+function applyStageSwitchMotion(now, baseScale) {
+  if (!modelGroup || stageSwitch.phase === "idle" || stageSwitch.phase === "waiting-enter") return false;
+  const t = Math.min(1, (now - stageSwitch.startedAt) / stageSwitch.duration);
+  const entering = stageSwitch.phase === "enter";
+  const eased = entering ? easeOutCubic(t) : easeInCubic(t);
+  const slideDistance = getStageSlideDistance(baseScale);
+  const x = entering
+    ? stageSwitch.direction * (1 - eased) * slideDistance
+    : -stageSwitch.direction * eased * slideDistance;
+  modelGroup.position.set(x, 0, 0);
+  modelGroup.rotation.x = 0;
+  modelGroup.rotation.z = 0;
+  modelGroup.scale.setScalar(baseScale);
+  if (t >= 1) {
+    if (stageSwitch.phase === "exit") {
+      finishStageExit();
+    } else {
+      finishStageEnter();
+    }
+  }
+  return true;
+}
+
 function animate(now) {
   requestAnimationFrame(animate);
   const elapsed = now - rebuildStart;
   const enter = Math.min(1, elapsed / 650);
   if (modelGroup) {
-    const targetScale = modelGroup.userData.stageScale || (currentCell().id === "neuron" ? 0.92 : 1.02);
+    const targetScale = getTargetStageScale();
     const eased = 1 - Math.pow(1 - enter, 3);
-    modelGroup.scale.setScalar(targetScale * (0.82 + eased * 0.18));
-    if (state.autoRotate && !state.crossSection) modelGroup.rotation.y += 0.004;
+    const introScale = stageSwitch.phase === "idle" ? 0.82 + eased * 0.18 : 1;
+    const baseScale = targetScale * introScale;
+    const stageMotionApplied = applyStageSwitchMotion(now, baseScale);
+    if (!modelGroup) {
+      updateCameraTween(now);
+      controls.update();
+      positionLabels();
+      renderer.render(scene, camera);
+      return;
+    }
+    if (!stageMotionApplied) {
+      modelGroup.position.set(0, 0, 0);
+      modelGroup.rotation.x = 0;
+      modelGroup.rotation.z = 0;
+      modelGroup.scale.setScalar(baseScale);
+    }
+    if (state.autoRotate && !state.crossSection && stageSwitch.phase === "idle") modelGroup.rotation.y += 0.004;
     updateSplitAnimation();
     updateSplitCamera();
   }
