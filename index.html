@@ -6,7 +6,7 @@
     <title>微观生命结构馆</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23fbf8ef'/%3E%3Ccircle cx='25' cy='35' r='13' fill='%235f9e48'/%3E%3Ccircle cx='39' cy='25' r='10' fill='%237454b8'/%3E%3Ccircle cx='43' cy='43' r='5' fill='%23c95362'/%3E%3C/svg%3E" />
     <link rel="preload" href="./assets/models/plant-cell.lite.glb" as="fetch" type="model/gltf-binary" crossorigin="anonymous" fetchpriority="high" />
-    <link rel="stylesheet" href="./src/styles.css" />
+    <link rel="stylesheet" href="./src/styles.css?v=20260605-inspector-flow-4" />
     <script type="importmap">
       {
         "imports": {
@@ -39,40 +39,59 @@
           </span>
         </a>
         <nav class="topnav" aria-label="主导航">
-          <button class="nav-button is-active" type="button" title="标本馆" data-panel="gallery">
+          <button class="nav-button" type="button" title="3D展示" data-nav="showcase">
+            <i data-lucide="box"></i>
+            <span>3D展示</span>
+          </button>
+          <button class="nav-button is-active" type="button" title="标本馆" data-nav="gallery">
             <i data-lucide="grid-3x3"></i>
             <span>标本馆</span>
           </button>
-          <button class="nav-button" type="button" title="知识库" data-panel="library">
-            <i data-lucide="library"></i>
+          <button class="nav-button" type="button" title="知识库" data-nav="library">
+            <i data-lucide="book-open"></i>
             <span>知识库</span>
           </button>
-          <button class="nav-button" type="button" title="观察笔记" data-panel="notes">
-            <i data-lucide="book-open"></i>
+          <button class="nav-button" type="button" title="观察笔记" data-nav="notes">
+            <i data-lucide="notebook-tabs"></i>
             <span>笔记</span>
           </button>
-          <button class="icon-button" type="button" title="设置" data-panel="settings">
+          <button class="nav-button" type="button" title="设置" data-nav="settings">
             <i data-lucide="settings"></i>
+            <span>设置</span>
           </button>
         </nav>
+        <div class="progress-meter" aria-label="探索进度">
+          <span id="progress-label">已探索 0/0</span>
+          <span class="progress-track"><span id="progress-bar" class="progress-fill"></span></span>
+        </div>
       </header>
 
-      <main class="workspace">
+      <section id="specimen-hall" class="specimen-hall" aria-labelledby="hall-title">
+        <div class="hall-main panel">
+          <div class="hall-head">
+            <div>
+              <h1 id="hall-title">用 3D 标本看懂微观生命结构</h1>
+              <p>面向生物课堂与自主学习，把抽象细胞知识转化为可旋转、可对比、可记录的三维观察体验。</p>
+            </div>
+            <label class="hall-search">
+              <i data-lucide="search"></i>
+              <input id="hall-search-input" type="search" placeholder="搜索标本名称或结构" />
+            </label>
+          </div>
+          <div id="hall-filter-list" class="hall-filter-list"></div>
+          <div id="hall-card-grid" class="hall-card-grid"></div>
+          <input id="specimen-upload-input" class="visually-hidden" type="file" accept=".glb,model/gltf-binary" />
+        </div>
+      </section>
+
+      <main id="explore-workspace" class="workspace is-hidden" aria-label="结构探索工作台">
         <aside class="left-rail">
           <section class="panel specimen-panel" aria-labelledby="specimen-heading">
             <div class="panel-title-row">
-              <span class="panel-symbol">CELL</span>
-              <h2 id="specimen-heading">细胞类型</h2>
+              <h2 id="specimen-heading">细胞标本</h2>
+              <i data-lucide="info" class="panel-info-icon"></i>
             </div>
             <div id="cell-list" class="cell-list"></div>
-          </section>
-
-          <section class="panel organelle-panel" aria-labelledby="organelle-heading">
-            <div class="panel-title-row">
-              <span class="panel-symbol">PART</span>
-              <h2 id="organelle-heading">结构索引</h2>
-            </div>
-            <div id="organelle-list" class="organelle-list"></div>
           </section>
         </aside>
 
@@ -80,28 +99,13 @@
           <section class="stage-panel" aria-labelledby="cell-title">
             <div class="stage-header">
               <div>
-                <p id="cell-type" class="cell-type">真核细胞</p>
-                <h1 id="cell-title">植物细胞</h1>
-              </div>
-              <div class="view-card" aria-label="观察模式">
-                <span class="mini-label">观察模式</span>
-                <div id="view-mode-group" class="segmented">
-                  <button type="button" class="mode-button is-active" data-view-mode="model" title="整体模型">
-                    <i data-lucide="box"></i>
-                  </button>
-                  <button type="button" class="mode-button" data-view-mode="layers" title="剖层模式">
-                    <i data-lucide="layers-3"></i>
-                  </button>
-                  <button type="button" class="mode-button" data-view-mode="labels" title="标签模式">
-                    <i data-lucide="circle-dot"></i>
-                  </button>
+                <div class="stage-title-row">
+                  <h1 id="cell-title">植物细胞</h1>
+                  <span id="cell-type" class="cell-type">真核细胞 · 当前标本</span>
                 </div>
-                <label class="switch-row">
-                  <span>剖切</span>
-                  <input id="cross-section-toggle" type="checkbox" />
-                  <span class="switch-track"></span>
-                </label>
+                <p id="stage-guidance" class="stage-guidance">点击左侧结构目录或 3D 模型中的细胞器开始观察。</p>
               </div>
+              <div id="stage-current-chip" class="stage-current-chip"></div>
             </div>
 
             <div id="canvas-wrap" class="canvas-wrap is-loading-live-model">
@@ -131,20 +135,24 @@
 
             <div class="stage-actions" aria-label="模型操作">
               <button id="rotate-button" type="button" class="tool-button is-active" title="自动旋转">
-                <i data-lucide="rotate-3d"></i>
-                <span>旋转</span>
+                <i data-lucide="play-circle"></i>
+                <span>自动旋转</span>
               </button>
               <button id="isolate-button" type="button" class="tool-button" title="聚焦当前结构">
-                <i data-lucide="focus"></i>
-                <span>聚焦</span>
+                <i data-lucide="crosshair"></i>
+                <span>聚焦结构</span>
               </button>
-              <button id="hide-button" type="button" class="tool-button" title="弱化其他结构">
-                <i data-lucide="eye-off"></i>
-                <span>弱化</span>
+              <button id="labels-button" type="button" class="tool-button" title="显示标签">
+                <i data-lucide="badge-info"></i>
+                <span>显示标签</span>
+              </button>
+              <button id="hide-button" type="button" class="tool-button" title="灰模显示">
+                <i data-lucide="box"></i>
+                <span>灰模显示</span>
               </button>
               <button id="reset-button" type="button" class="tool-button" title="重置视角">
-                <i data-lucide="scan"></i>
-                <span>复位</span>
+                <i data-lucide="rotate-ccw"></i>
+                <span>复位视角</span>
               </button>
               <span class="action-spacer"></span>
               <button id="screenshot-button" type="button" class="tool-button" title="保存截图">
@@ -157,66 +165,128 @@
               </button>
             </div>
           </section>
-
-          <section class="below-grid">
-            <article class="panel micro-panel">
-              <div class="panel-title-row compact">
-                <h2>显微观察</h2>
-                <span id="micro-note" class="meta-chip">3 种视野</span>
-              </div>
-              <div id="micrograph-list" class="micrograph-list"></div>
-            </article>
-
-            <article class="panel compare-panel">
-              <div class="panel-title-row compact">
-                <h2>横向对比</h2>
-                <span class="meta-chip">VS</span>
-              </div>
-              <div id="compare-card" class="compare-card"></div>
-            </article>
-          </section>
         </section>
 
         <aside class="right-rail">
-          <section class="panel detail-panel" aria-labelledby="detail-heading">
+          <section class="panel inspector-panel" aria-labelledby="detail-heading">
             <div class="panel-title-row">
-              <span class="panel-symbol">INFO</span>
-              <h2 id="detail-heading">结构详情</h2>
-              <button id="favorite-button" class="heart-button" type="button" title="收藏当前结构">
-                <i data-lucide="heart"></i>
+              <h2 id="detail-heading">结构检查器</h2>
+            </div>
+            <div id="inspector-tabs" class="inspector-tabs inspector-mode-tabs" aria-label="检查器内容切换">
+              <button class="inspector-tab is-active" type="button" data-inspector-tab="archive">
+                <i data-lucide="file-text"></i>
+                <span>结构档案</span>
+              </button>
+              <button class="inspector-tab" type="button" data-inspector-tab="evidence">
+                <i data-lucide="clipboard-check"></i>
+                <span>证据任务</span>
+              </button>
+              <button class="inspector-tab" type="button" data-inspector-tab="directory">
+                <i data-lucide="list-tree"></i>
+                <span>结构目录</span>
               </button>
             </div>
-            <div class="detail-hero">
-              <div id="detail-icon" class="detail-icon"></div>
-              <div>
-                <h3 id="detail-name">细胞核</h3>
-                <p id="detail-subtitle">遗传信息中枢</p>
+            <div id="inspector-empty" class="inspector-empty">
+              <div class="empty-visual"><i data-lucide="hand-pointer"></i></div>
+              <h3>选择一个结构开始观察</h3>
+              <p>点击左侧结构目录或 3D 模型中的细胞器，即可查看该结构的详细信息。</p>
+              <div id="quick-part-list" class="quick-part-list"></div>
+            </div>
+            <div id="inspector-detail" class="inspector-detail">
+              <div class="detail-hero">
+                <div id="detail-icon" class="detail-icon"></div>
+                <div>
+                  <h3 id="detail-name">细胞核</h3>
+                  <p id="detail-subtitle">遗传信息中枢</p>
+                </div>
               </div>
+              <div id="inspector-content" class="inspector-content" data-inspector-panel="archive"></div>
+              <section class="inspector-evidence-launcher is-hidden" aria-labelledby="inspector-evidence-heading" data-inspector-panel="evidence">
+                <div class="inspector-subhead">
+                  <h3 id="inspector-evidence-heading">证据与任务</h3>
+                  <span>按顺序完成后进入下一项</span>
+                </div>
+                <div class="inspector-evidence-grid">
+                  <button type="button" class="inspector-evidence-button" title="显微观察" data-evidence-open="micro">
+                    <i data-lucide="microscope"></i>
+                    <span>显微观察</span>
+                  </button>
+                  <button type="button" class="inspector-evidence-button" title="横向对比" data-evidence-open="compare">
+                    <i data-lucide="arrow-left-right"></i>
+                    <span>横向对比</span>
+                  </button>
+                  <button type="button" class="inspector-evidence-button" title="观察任务" data-evidence-open="task">
+                    <i data-lucide="clipboard-check"></i>
+                    <span>观察任务</span>
+                  </button>
+                </div>
+                <div class="inspector-task-flow">
+                  <article data-evidence-step="micro">
+                    <strong>1. 显微观察</strong>
+                    <span>先收集显微图证据</span>
+                  </article>
+                  <article data-evidence-step="compare">
+                    <strong>2. 横向对比</strong>
+                    <span>再比较不同标本差异</span>
+                  </article>
+                  <article data-evidence-step="task">
+                    <strong>3. 观察任务</strong>
+                    <span>最后完成小测与总结</span>
+                  </article>
+                </div>
+              </section>
+              <section class="inspector-structure-directory is-hidden" aria-labelledby="organelle-heading" data-inspector-panel="directory">
+                <div class="inspector-subhead">
+                  <h3 id="organelle-heading">结构目录</h3>
+                  <span>点击结构可同步舞台与检查器</span>
+                </div>
+                <div id="organelle-list" class="organelle-list inspector-organelle-list"></div>
+              </section>
+              <dl id="detail-facts" class="fact-list" hidden></dl>
+              <p id="bio-note" class="bio-note" hidden></p>
+              <p id="fun-fact" class="fun-fact" hidden></p>
+              <div id="occurs-visual" class="occurs-visual" hidden></div>
+              <button id="favorite-button" class="primary-action" type="button">
+                <i data-lucide="plus"></i>
+                加入笔记
+              </button>
             </div>
-            <dl id="detail-facts" class="fact-list"></dl>
-          </section>
-
-          <section class="panel note-panel">
-            <div class="panel-title-row">
-              <span class="panel-symbol">NOTE</span>
-              <h2>生物学札记</h2>
-            </div>
-            <p id="bio-note" class="bio-note"></p>
-            <p id="fun-fact" class="fun-fact"></p>
-          </section>
-
-          <section class="panel occurs-panel">
-            <div class="panel-title-row">
-              <span class="panel-symbol">MAP</span>
-              <h2>出现位置</h2>
-            </div>
-            <div id="occurs-visual" class="occurs-visual"></div>
           </section>
         </aside>
       </main>
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="onboarding-backdrop" class="onboarding-backdrop" hidden></div>
+    <section id="onboarding-prompt" class="onboarding-prompt" hidden role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+      <span class="section-kicker"><i data-lucide="sparkles"></i>新手提示</span>
+      <h2 id="onboarding-title">先打开 3D 展示，再回到标本馆做结构学习</h2>
+      <p>3D展示是这个案例的核心入口：直接旋转模型、点选结构，再进入证据任务和笔记。</p>
+      <div class="push-actions">
+        <button id="onboarding-start" class="primary-action" type="button">
+          <i data-lucide="box"></i>
+          进入 3D 展示
+        </button>
+        <button id="onboarding-stay" class="text-link-button" type="button">跳过</button>
+      </div>
+    </section>
+    <div id="material-backdrop" class="material-backdrop" hidden></div>
+    <section id="material-card" class="material-card" hidden role="dialog" aria-modal="true" aria-labelledby="material-title">
+      <div id="material-content" class="material-content"></div>
+    </section>
+    <div id="evidence-modal-backdrop" class="evidence-modal-backdrop" hidden></div>
+    <section id="evidence-modal" class="evidence-modal" hidden role="dialog" aria-modal="true" aria-labelledby="evidence-modal-title">
+      <div class="evidence-modal-shell">
+        <div class="evidence-modal-head">
+          <span class="section-kicker"><i data-lucide="microscope"></i>证据与任务</span>
+          <h2 id="evidence-modal-title">显微观察</h2>
+          <button id="evidence-modal-close" class="drawer-close" type="button" title="关闭证据卡片">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div id="evidence-modal-content" class="evidence-modal-content"></div>
+      </div>
+    </section>
     <div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
     <aside id="workspace-drawer" class="workspace-drawer" hidden aria-live="polite" aria-label="功能面板">
       <div class="drawer-shell">
@@ -226,7 +296,19 @@
         </button>
       </div>
     </aside>
-    <script type="module" src="./src/app.js"></script>
+    <div id="settings-backdrop" class="settings-backdrop" hidden></div>
+    <section id="settings-modal" class="settings-modal" hidden role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <div class="settings-shell">
+        <div class="settings-head">
+          <h2 id="settings-title">设置</h2>
+          <button id="settings-close" class="drawer-close" type="button" title="关闭设置">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div id="settings-content" class="settings-content"></div>
+      </div>
+    </section>
+    <script type="module" src="./src/app.js?v=20260605-inspector-flow-4"></script>
     <script>
       setTimeout(() => {
         if (document.body.classList.contains("app-ready")) return;

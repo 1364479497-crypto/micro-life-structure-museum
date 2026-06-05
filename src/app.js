@@ -403,10 +403,15 @@ const cells = [
 ];
 
 const state = {
+  screen: "gallery",
   cellIndex: 0,
   selectedPart: "细胞核",
   viewMode: "model",
   layerRenderMode: "gray",
+  inspectorTab: "archive",
+  evidenceTab: "micro",
+  hallFilter: "all",
+  hallSearch: "",
   crossSection: false,
   autoRotate: true,
   isolate: false,
@@ -414,16 +419,44 @@ const state = {
   favorite: false,
   activePanel: "gallery",
   activeMicroIndex: 0,
+  materialCellIndex: 0,
+  materialPartIndex: 0,
   transition: 1,
   isStageSwitching: false
 };
 
 const els = {
-  topNavButtons: [...document.querySelectorAll("[data-panel]")],
+  topNavButtons: [...document.querySelectorAll("[data-nav]")],
+  specimenHall: document.querySelector("#specimen-hall"),
+  exploreWorkspace: document.querySelector("#explore-workspace"),
+  progressLabel: document.querySelector("#progress-label"),
+  progressBar: document.querySelector("#progress-bar"),
+  hallSearchInput: document.querySelector("#hall-search-input"),
+  hallFilterList: document.querySelector("#hall-filter-list"),
+  hallCardGrid: document.querySelector("#hall-card-grid"),
+  guideButton: document.querySelector("#guide-button"),
+  showcaseEntryButton: document.querySelector("#showcase-entry-button"),
+  specimenUploadInput: document.querySelector("#specimen-upload-input"),
   cellList: document.querySelector("#cell-list"),
   organelleList: document.querySelector("#organelle-list"),
   cellTitle: document.querySelector("#cell-title"),
   cellType: document.querySelector("#cell-type"),
+  stageGuidance: document.querySelector("#stage-guidance"),
+  stageCurrentChip: document.querySelector("#stage-current-chip"),
+  inspectorEmpty: document.querySelector("#inspector-empty"),
+  inspectorDetail: document.querySelector("#inspector-detail"),
+  quickPartList: document.querySelector("#quick-part-list"),
+  inspectorTabs: document.querySelector("#inspector-tabs"),
+  inspectorContent: document.querySelector("#inspector-content"),
+  evidenceTabs: document.querySelector("#evidence-tabs"),
+  evidenceContent: document.querySelector("#evidence-content"),
+  evidenceCollapse: document.querySelector("#evidence-collapse"),
+  evidenceLaunchButtons: [...document.querySelectorAll("[data-evidence-open]")],
+  evidenceModalBackdrop: document.querySelector("#evidence-modal-backdrop"),
+  evidenceModal: document.querySelector("#evidence-modal"),
+  evidenceModalTitle: document.querySelector("#evidence-modal-title"),
+  evidenceModalContent: document.querySelector("#evidence-modal-content"),
+  evidenceModalClose: document.querySelector("#evidence-modal-close"),
   detailName: document.querySelector("#detail-name"),
   detailSubtitle: document.querySelector("#detail-subtitle"),
   detailFacts: document.querySelector("#detail-facts"),
@@ -439,7 +472,7 @@ const els = {
   canvasWrap: document.querySelector("#canvas-wrap"),
   stagePrevButton: document.querySelector("#stage-prev-button"),
   stageNextButton: document.querySelector("#stage-next-button"),
-  crossToggle: document.querySelector("#cross-section-toggle"),
+  labelsButton: document.querySelector("#labels-button"),
   rotateButton: document.querySelector("#rotate-button"),
   isolateButton: document.querySelector("#isolate-button"),
   hideButton: document.querySelector("#hide-button"),
@@ -451,6 +484,18 @@ const els = {
   drawerBackdrop: document.querySelector("#drawer-backdrop"),
   drawerContent: document.querySelector("#drawer-content"),
   drawerClose: document.querySelector("#drawer-close"),
+  settingsBackdrop: document.querySelector("#settings-backdrop"),
+  settingsModal: document.querySelector("#settings-modal"),
+  settingsContent: document.querySelector("#settings-content"),
+  settingsClose: document.querySelector("#settings-close"),
+  onboardingBackdrop: document.querySelector("#onboarding-backdrop"),
+  onboardingPrompt: document.querySelector("#onboarding-prompt"),
+  onboardingClose: document.querySelector("#onboarding-close"),
+  onboardingStart: document.querySelector("#onboarding-start"),
+  onboardingStay: document.querySelector("#onboarding-stay"),
+  materialBackdrop: document.querySelector("#material-backdrop"),
+  materialCard: document.querySelector("#material-card"),
+  materialContent: document.querySelector("#material-content"),
   toast: document.querySelector("#toast")
 };
 
@@ -471,10 +516,11 @@ camera.position.set(0, 5.8, 6.2);
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.dampingFactor = 0.07;
-controls.minDistance = 4.4;
+controls.minDistance = 2.6;
 controls.maxDistance = 12;
 controls.enablePan = true;
 controls.target.set(0, 0, 0);
+controls.addEventListener("change", positionLabels);
 
 const modelRoot = new THREE.Group();
 scene.add(modelRoot);
@@ -494,16 +540,18 @@ let modelRequestId = 0;
 const gltfLoader = new GLTFLoader();
 gltfLoader.setCrossOrigin("anonymous");
 const modelCache = new Map();
+const onboardingStorageKey = "micro-life-hall-guide-seen:v3";
 const preloadQueue = [];
 const queuedPreloadIds = new Set();
 let preloadActive = false;
 const splitLayerCount = 4;
 const splitNormalMatrix = new THREE.Matrix3();
+const labelProjection = new THREE.Vector3();
+const labelCenterProjection = new THREE.Vector3();
 const defaultCameraPosition = new THREE.Vector3(0, 5.8, 6.2);
 const defaultCameraTarget = new THREE.Vector3(0, 0, 0);
 const splitCameraPosition = new THREE.Vector3(0, 2.0, 7.1);
 const splitCameraTarget = new THREE.Vector3(0, 0.02, 0);
-const labelProjection = new THREE.Vector3();
 const cameraTween = {
   active: false,
   startedAt: 0,
@@ -522,47 +570,64 @@ const stageSwitch = {
 };
 let projectedLabelPoints = [];
 const plantLabelAnchors = [
-  [0.08, 0.34, -0.04],
-  [-0.16, 0.1, 0.04],
-  [-0.4, 0.06, 0.18],
-  [-0.34, 0.07, -0.22],
-  [0.26, 0.18, 0.12]
+  [0.0, 0.24, 0.34],
+  [-0.22, 0.08, 0.4],
+  [-0.56, 0.14, 0.42],
+  [0.34, 0.06, 0.36],
+  [0.08, -0.1, 0.36]
 ];
 const labelAnchorPresets = {
   plant: plantLabelAnchors,
   immune: [
-    [0.01, 0.12, -0.2],
-    [0.12, 0.1, -0.17],
-    [-0.32, -0.17, -0.18]
+    [-0.12, 0.22, 0.34],
+    [0.28, -0.04, 0.34],
+    [-0.34, -0.18, 0.28]
   ],
   neuron: [
-    [0.2, 0.01, -0.12],
-    [-0.22, 0.03, -0.14],
-    [-0.36, 0.1, -0.14],
-    [0.36, 0.04, -0.12]
+    [0.3, -0.02, 0.3],
+    [-0.18, 0.14, 0.34],
+    [-0.62, 0.36, 0.32],
+    [0.18, 0.02, 0.32]
   ],
   epithelial: [
-    [0.02, 0.3, -0.24],
-    [-0.02, -0.12, -0.36],
-    [0.24, 0.1, -0.28]
+    [0, 0.48, 0.32],
+    [0.08, -0.22, 0.34],
+    [0.34, 0.02, 0.34]
   ],
   bacteria: [
-    [0, 0.05, -0.13],
-    [-0.49, 0.07, -0.13],
-    [0.53, -0.02, -0.13],
-    [0.18, -0.02, -0.13]
+    [0, 0.02, 0.34],
+    [-0.48, 0.04, 0.32],
+    [0.58, -0.1, 0.3],
+    [0.2, -0.12, 0.34]
   ],
   animal: [
-    [0.16, 0.1, -0.12],
-    [-0.22, 0.05, -0.12],
-    [-0.02, 0.02, -0.12],
-    [0.3, -0.16, -0.12]
+    [0.18, 0.22, 0.34],
+    [-0.34, -0.16, 0.34],
+    [0.02, -0.02, 0.36],
+    [0.28, -0.24, 0.32]
   ],
   muscle: [
-    [0, 0.08, -0.08],
-    [-0.1, -0.28, -0.12],
-    [-0.04, -0.04, -0.08]
+    [0.08, 0.06, 0.32],
+    [0.26, -0.22, 0.32],
+    [-0.24, 0.36, 0.34]
   ]
+};
+const labelAnchorScaleFactors = {
+  plant: 0.82,
+  immune: 0.7,
+  neuron: 0.76,
+  epithelial: 0.74,
+  bacteria: 0.8,
+  animal: 0.74,
+  muscle: 0.78
+};
+const centerLockedLabelRadii = {
+  plant: [0.17, 0.15, 0.24, 0.22, 0.18],
+  muscle: [0.16, 0.25, 0.19]
+};
+const centerLockedLabelAngles = {
+  plant: [-1.3, 0.15, 2.75, -0.65, 1.05],
+  muscle: [0.02, 0.78, -2.35]
 };
 const reusable = {
   sphere: new THREE.SphereGeometry(1, 48, 32),
@@ -583,6 +648,99 @@ function selectedPartData() {
 function currentCompareCell() {
   const cell = currentCell();
   return cells.find((item) => item.title === cell.compare) || cells[(state.cellIndex + 1) % cells.length];
+}
+
+const specimenFilters = [
+  { id: "all", label: "全部", icon: "layout-grid" },
+  { id: "eukaryote", label: "真核细胞", icon: "atom" },
+  { id: "prokaryote", label: "原核细胞", icon: "bug" },
+  { id: "plant", label: "植物", icon: "leaf" },
+  { id: "animal", label: "动物", icon: "paw-print" },
+  { id: "human", label: "人体组织", icon: "user-round" },
+  { id: "immune", label: "免疫系统", icon: "shield-plus" }
+];
+
+const specimenCategories = {
+  plant: ["eukaryote", "plant"],
+  immune: ["eukaryote", "immune", "human"],
+  neuron: ["eukaryote", "animal"],
+  epithelial: ["eukaryote", "human"],
+  bacteria: ["prokaryote"],
+  animal: ["eukaryote", "animal"],
+  muscle: ["eukaryote", "human", "animal"]
+};
+
+const structureGroups = [
+  { id: "boundary", name: "外部边界", icon: "shield", names: ["细胞壁", "细胞膜", "肌膜"] },
+  { id: "genetic", name: "遗传与控制", icon: "dna", names: ["细胞核", "拟核", "胞体", "分叶细胞核"] },
+  { id: "energy", name: "能量与合成", icon: "zap", names: ["叶绿体", "线粒体", "内质网", "高尔基体", "核糖体", "溶酶体"] },
+  { id: "storage", name: "储存与运输", icon: "boxes", names: ["中央液泡", "轴突", "树突", "髓鞘", "纤毛", "紧密连接", "鞭毛", "肌原纤维", "颗粒"] }
+];
+
+function specimenProgress(cell) {
+  const explored = cell.id === "plant" ? 3 : cell.id === "animal" ? 2 : cell.id === "bacteria" ? 1 : 0;
+  const total = Math.max(cell.parts.length + (cell.id === "plant" ? 3 : 2), 4);
+  const status = explored === 0 ? "not_started" : explored >= total ? "completed" : "in_progress";
+  return { explored, total, status };
+}
+
+function specimenStatusCopy(cell, isCurrent = false) {
+  if (isCurrent) return "当前";
+  const progress = specimenProgress(cell);
+  if (progress.status === "not_started") return "未开始";
+  if (progress.status === "completed") return "完成";
+  return "继续";
+}
+
+function selectedPartIndex(cell = currentCell()) {
+  return Math.max(0, cell.parts.findIndex((part) => part.name === state.selectedPart));
+}
+
+function structureExplored(part, index = selectedPartIndex()) {
+  return part.name === state.selectedPart || index <= selectedPartIndex();
+}
+
+function groupParts(cell = currentCell()) {
+  const used = new Set();
+  const groups = structureGroups.map((group) => {
+    const parts = cell.parts.filter((part) => group.names.includes(part.name));
+    parts.forEach((part) => used.add(part.name));
+    return { ...group, parts };
+  });
+  const rest = cell.parts.filter((part) => !used.has(part.name));
+  if (rest.length) groups.push({ id: "other", name: "其他结构", icon: "circle-ellipsis", parts: rest });
+  return groups.filter((group) => group.parts.length);
+}
+
+const inspectorTabIds = new Set(["archive", "evidence", "directory"]);
+
+function normalizeInspectorTab(tab) {
+  return inspectorTabIds.has(tab) ? tab : "archive";
+}
+
+function syncInspectorPanels() {
+  state.inspectorTab = normalizeInspectorTab(state.inspectorTab);
+  els.inspectorTabs?.querySelectorAll("[data-inspector-tab]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.inspectorTab === state.inspectorTab);
+  });
+  document.querySelectorAll("[data-inspector-panel]").forEach((panel) => {
+    panel.classList.toggle("is-hidden", panel.dataset.inspectorPanel !== state.inspectorTab);
+  });
+  updateEvidenceLaunchState();
+}
+
+function updateEvidenceLaunchState() {
+  const order = ["micro", "compare", "task"];
+  const activeIndex = Math.max(0, order.indexOf(state.evidenceTab));
+  document.querySelectorAll("[data-evidence-open]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.evidenceOpen === state.evidenceTab);
+  });
+  document.querySelectorAll("[data-evidence-step]").forEach((step) => {
+    const stepIndex = order.indexOf(step.dataset.evidenceStep);
+    step.classList.toggle("is-active", stepIndex === activeIndex);
+    step.classList.toggle("is-done", stepIndex >= 0 && stepIndex < activeIndex);
+    step.classList.toggle("is-todo", stepIndex > activeIndex);
+  });
 }
 
 function noteStorageKey() {
@@ -650,8 +808,8 @@ function attachPreparedModel(group, requestId) {
   els.canvasWrap.classList.add("has-live-model");
   els.canvasWrap.classList.remove("is-loading-live-model");
   rebuildStart = performance.now();
-  startStageEnterIfPending();
   updateStageModeState();
+  if (state.isolate) focusSelectedPart();
   scheduleNearbyModelPreloads(state.cellIndex);
   return true;
 }
@@ -663,6 +821,8 @@ function loadPreparedModel(cell) {
 
   if (!cell.modelUrl) {
     const generated = builders[cell.id]();
+    generated.userData.labelAnchors = createLabelAnchors(cell, 1.25);
+    generated.add(generated.userData.labelAnchors);
     generated.userData.cachedModel = true;
     generated.userData.cacheKey = cell.id;
     modelCache.set(cell.id, { group: generated, promise: null });
@@ -739,13 +899,6 @@ function normalizeCellIndex(index) {
   return (index + cells.length) % cells.length;
 }
 
-function directionForCellIndex(nextIndex) {
-  const normalized = normalizeCellIndex(nextIndex);
-  const forward = (normalized - state.cellIndex + cells.length) % cells.length;
-  const backward = (state.cellIndex - normalized + cells.length) % cells.length;
-  return forward <= backward ? 1 : -1;
-}
-
 function updateCellSwitchControls() {
   els.stagePrevButton.disabled = state.isStageSwitching;
   els.stageNextButton.disabled = state.isStageSwitching;
@@ -764,38 +917,40 @@ function applyCellSwitch(index, options = {}) {
 
 function switchCellTo(index, options = {}) {
   const nextIndex = normalizeCellIndex(index);
-  if (nextIndex === state.cellIndex || state.isStageSwitching) return;
-  const direction = options.direction || directionForCellIndex(nextIndex);
-  if (!modelGroup) {
-    applyCellSwitch(nextIndex, options);
-    return;
-  }
-  state.isStageSwitching = true;
-  stageSwitch.phase = "exit";
-  stageSwitch.direction = direction;
-  stageSwitch.pendingIndex = nextIndex;
-  stageSwitch.startedAt = performance.now();
-  els.canvasWrap.dataset.switchDirection = direction > 0 ? "next" : "prev";
-  updateCellSwitchControls();
-  updateToolbar();
+  if (nextIndex === state.cellIndex) return;
+  state.isStageSwitching = false;
+  stageSwitch.phase = "idle";
+  stageSwitch.pendingIndex = null;
+  els.canvasWrap.removeAttribute("data-switch-direction");
+  applyCellSwitch(nextIndex, options);
 }
 
 function selectPart(partName, options = {}) {
   if (!partName || partName === state.selectedPart) {
+    if (partName) state.inspectorTab = normalizeInspectorTab(options.inspectorTab || state.inspectorTab);
+    updateHeader();
     updateToolbar();
     updateLabels();
     updateDetail();
-    if (options.focus) focusSelectedPart();
+    renderEvidenceContent();
+    renderEvidenceModalContent();
+    if (options.focus || state.isolate) focusSelectedPart();
     return;
   }
   state.selectedPart = partName;
+  state.inspectorTab = normalizeInspectorTab(options.inspectorTab || "archive");
+  updateHeader();
   updateDetail();
   renderOrganelleList();
   updateLabels();
   updateModelMaterials();
   updateToolbar();
   renderActivePanel();
-  if (options.focus) focusSelectedPart();
+  renderEvidenceContent();
+  renderEvidenceModalContent();
+  renderSpecimenHall();
+  updateProgress();
+  if (options.focus || state.isolate) focusSelectedPart();
   if (options.toast !== false) showToast(`已定位到${partName}`);
 }
 
@@ -807,6 +962,8 @@ function resetObservationState(options = {}) {
   state.autoRotate = true;
   state.isolate = false;
   state.dimOthers = false;
+  state.inspectorTab = "archive";
+  state.evidenceTab = "micro";
   if (options.resetMicro !== false) state.activeMicroIndex = 0;
   resetCamera();
 }
@@ -1277,20 +1434,21 @@ function createSplitModel(content) {
   return splitRoot;
 }
 
-function createLabelAnchors(cell) {
+function createLabelAnchors(cell, radius = 1) {
   const anchors = new THREE.Group();
   anchors.name = "label-anchors";
   const positions = labelAnchorPresets[cell.id] || [
-    [-0.3, 0.18, 0.2],
-    [0.18, 0.1, -0.1],
-    [0.34, -0.06, 0.18],
-    [-0.12, -0.14, -0.2],
-    [0.02, 0.22, 0.02]
+    [-0.3, 0.2, 0.44],
+    [0.18, 0.12, 0.46],
+    [0.34, -0.08, 0.42],
+    [-0.12, -0.18, 0.44],
+    [0.02, 0.28, 0.45]
   ];
+  const scale = Math.max(0.6, radius * (labelAnchorScaleFactors[cell.id] || 0.76));
   cell.parts.slice(0, 5).forEach((part, index) => {
     const anchor = new THREE.Object3D();
     const position = positions[index] || [0, 0, 0];
-    anchor.position.set(position[0], position[1], position[2]);
+    anchor.position.set(position[0] * scale, position[1] * scale, position[2] * scale);
     anchor.userData.part = part;
     anchors.add(anchor);
   });
@@ -1300,11 +1458,10 @@ function createLabelAnchors(cell) {
 function updateStageModeState() {
   const isLayerMode = state.viewMode === "layers";
   const isLabelMode = state.viewMode === "labels";
-  controls.enableRotate = !state.crossSection && !state.isStageSwitching;
+  controls.enableRotate = !state.isStageSwitching;
   controls.enablePan = !state.isStageSwitching;
   els.canvasWrap.classList.toggle("is-layer-mode", isLayerMode);
   els.canvasWrap.classList.toggle("is-label-mode", isLabelMode);
-  els.canvasWrap.classList.toggle("is-cross-section", state.crossSection);
   els.canvasWrap.classList.toggle("is-focus-mode", state.isolate);
   els.canvasWrap.classList.toggle("is-dim-mode", state.dimOthers);
   els.layerModePanel?.querySelectorAll(".layer-mode-chip").forEach((button) => {
@@ -1349,31 +1506,15 @@ function prepareLoadedModel(model, cell = currentCell()) {
   wrapper.userData.content = model;
   wrapper.userData.orientationRoot = orientationRoot;
   wrapper.userData.splitRoot = splitRoot;
-  wrapper.userData.labelAnchors = createLabelAnchors(cell);
-  model.add(wrapper.userData.labelAnchors);
+  wrapper.userData.labelAnchors = createLabelAnchors(cell, wrapper.userData.stageRadius);
+  orientationRoot.add(wrapper.userData.labelAnchors);
   wrapper.add(orientationRoot);
   return wrapper;
-}
-
-function startStageEnterIfPending() {
-  if (stageSwitch.phase !== "waiting-enter" || !modelGroup) return;
-  stageSwitch.phase = "enter";
-  stageSwitch.startedAt = performance.now();
-  modelGroup.position.set(stageSwitch.direction * getStageSlideDistance(getTargetStageScale()), 0, 0);
-  modelGroup.rotation.z = 0;
 }
 
 function getTargetStageScale(group = modelGroup) {
   if (!group) return 1;
   return group.userData.stageScale || (currentCell().id === "neuron" ? 0.92 : 1.02);
-}
-
-function getStageSlideDistance(baseScale = getTargetStageScale()) {
-  const targetDistance = camera.position.distanceTo(controls.target);
-  const visibleHeight = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * targetDistance;
-  const visibleWidth = visibleHeight * camera.aspect;
-  const modelRadius = (modelGroup?.userData.stageRadius || 2.2) * baseScale;
-  return Math.max(visibleWidth * 0.5 + modelRadius + 1.4, 7.2);
 }
 
 function rebuildModel() {
@@ -1414,14 +1555,14 @@ function updateModelMaterials() {
   if (!modelGroup) return;
   const isLoadedGltf = Boolean(modelGroup.userData.loadedGltf);
   const splitActive = isLoadedGltf && Boolean(modelGroup.userData.splitActive);
-  const wantsLayerMaterial = isLoadedGltf && state.viewMode === "layers" && !state.crossSection;
+  const wantsLayerMaterial = isLoadedGltf && state.dimOthers;
   modelGroup.traverse((obj) => {
     if (!obj.isMesh || !obj.material) return;
     const isSelected = obj.userData.part === part.name;
     const isSplitClone = Boolean(obj.userData.isSplitClone);
     const keepVisible = isLoadedGltf
       ? (splitActive ? isSplitClone : !isSplitClone)
-      : !state.isolate || isSelected || obj.userData.shell;
+      : true;
     obj.visible = keepVisible;
 
     if (isLoadedGltf) {
@@ -1457,45 +1598,291 @@ function updateModelMaterials() {
   });
 }
 
+function customSpecimenImage(title) {
+  const safeTitle = String(title || "自定义标本")
+    .slice(0, 18)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+      <defs>
+        <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stop-color="#eef7e8"/>
+          <stop offset="1" stop-color="#fff8ef"/>
+        </linearGradient>
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#34422f" flood-opacity=".18"/>
+        </filter>
+      </defs>
+      <rect width="640" height="360" rx="34" fill="url(#bg)"/>
+      <g filter="url(#shadow)" transform="translate(320 170)">
+        <path d="M-96-54 0-106 96-54 0-2z" fill="#cbf2c7" stroke="#004737" stroke-width="8" stroke-linejoin="round"/>
+        <path d="M-96-54v108L0 106V-2z" fill="#a7db9a" stroke="#004737" stroke-width="8" stroke-linejoin="round"/>
+        <path d="M96-54v108L0 106V-2z" fill="#dcf5d9" stroke="#004737" stroke-width="8" stroke-linejoin="round"/>
+        <circle cx="0" cy="-2" r="24" fill="#004737"/>
+      </g>
+      <text x="320" y="304" text-anchor="middle" fill="#004737" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="34" font-weight="700">${safeTitle}</text>
+    </svg>
+  `;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+function createCustomCell(file) {
+  const rawName = file.name.replace(/\.[^.]+$/, "").trim() || "我的 3D 标本";
+  const id = `custom-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const image = customSpecimenImage(rawName);
+  return {
+    id,
+    image,
+    thumbImage: image,
+    modelUrl: URL.createObjectURL(file),
+    occursImage: null,
+    microImages: [],
+    title: rawName,
+    type: "自定义标本",
+    accent: "#004737",
+    accentDark: "#004737",
+    thumb: "custom",
+    compare: "植物细胞",
+    compareType: "参考标本",
+    occurs: "用户上传的 GLB 模型",
+    note: "这是你上传的自定义 3D 标本，可以进入 3D 展示旋转观察，并继续补充结构说明与课堂笔记。",
+    fun: "小知识：自定义模型会保留在当前页面会话中，刷新页面后需要重新上传。",
+    micro: ["模型视图", "结构观察", "课堂备注"],
+    microClass: "micro-custom",
+    defaultPart: "自定义模型",
+    parts: [
+      {
+        name: "自定义模型",
+        tag: "用户上传",
+        color: "#004737",
+        image,
+        facts: { "来源": "本地 GLB 文件", "状态": "已上传", "用途": "3D 展示与观察" },
+        note: "你可以把模型作为课堂演示素材使用，后续可继续补充结构标签、显微证据和观察任务。"
+      }
+    ],
+    custom: true
+  };
+}
+
+function handleSpecimenUpload(file) {
+  if (!file) return;
+  if (!file.name.toLowerCase().endsWith(".glb")) {
+    showToast("请上传 .glb 格式的 3D 模型");
+    return;
+  }
+  const customCell = createCustomCell(file);
+  cells.push(customCell);
+  specimenCategories[customCell.id] = ["custom"];
+  state.cellIndex = cells.length - 1;
+  state.selectedPart = customCell.defaultPart;
+  state.hallFilter = "all";
+  state.hallSearch = "";
+  if (els.hallSearchInput) els.hallSearchInput.value = "";
+  renderSpecimenHall();
+  updateProgress();
+  updateNavState();
+  showToast(`已添加标本：${customCell.title}`);
+}
+
+function filteredHallCells() {
+  const query = state.hallSearch.trim().toLowerCase();
+  return cells.filter((cell) => {
+    const matchesFilter = state.hallFilter === "all" || (specimenCategories[cell.id] || []).includes(state.hallFilter);
+    const haystack = [cell.title, cell.type, cell.parts.map((part) => part.name).join(" "), cell.note].join(" ").toLowerCase();
+    return matchesFilter && (!query || haystack.includes(query));
+  });
+}
+
+function renderSpecimenHall() {
+  if (!els.specimenHall) return;
+  els.hallFilterList.innerHTML = specimenFilters.map((filter) => `
+    <button class="hall-filter ${filter.id === state.hallFilter ? "is-active" : ""}" type="button" data-hall-filter="${filter.id}">
+      <i data-lucide="${filter.icon}"></i>
+      ${filter.label}
+    </button>
+  `).join("");
+
+  const visibleCells = filteredHallCells();
+  const cellCards = visibleCells.map((cell) => {
+    const index = cells.indexOf(cell);
+    const progress = specimenProgress(cell);
+    const percent = Math.max(6, Math.round((progress.explored / progress.total) * 100));
+    return `
+      <article class="hall-card ${index === state.cellIndex ? "is-current" : ""}" style="--accent:${cell.accent}">
+        <div class="hall-card-image"><img src="${cell.image}" alt="${cell.title}" loading="eager"></div>
+        <div class="hall-card-body">
+          <h2>${cell.title}<span>${(specimenCategories[cell.id] || [cell.type])[0] === "plant" ? "植物" : cell.type}</span></h2>
+          <p><strong>关键结构：</strong>${cell.parts.slice(0, 3).map((part) => part.name).join("、")}</p>
+          <p><strong>学习目标：</strong>${cell.fun.replace("小知识：", "")}</p>
+          <div class="hall-card-foot">
+            <span>${progress.explored ? `已探索 ${progress.explored}/${progress.total}` : "未开始"}</span>
+            <span class="mini-progress"><span style="width:${percent}%"></span></span>
+            <span class="hall-card-actions">
+              <button type="button" data-hall-material="${index}">查看资料</button>
+              <button class="is-secondary" type="button" data-hall-showcase="${index}">查看 3D</button>
+            </span>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join("");
+  const addCard = `
+    <button class="hall-card add-specimen-card" type="button" data-upload-specimen>
+      <span class="add-specimen-visual">
+        <span class="add-specimen-icon"><i data-lucide="plus"></i></span>
+      </span>
+      <span class="add-specimen-body">
+        <strong>添加标本</strong>
+        <span>上传自己的 .glb 3D 模型</span>
+        <small>添加后会自动生成一张标本卡片</small>
+      </span>
+    </button>
+  `;
+  els.hallCardGrid.innerHTML = `${cellCards || `<div class="empty-result">没有找到匹配的标本。</div>`}${addCard}`;
+
+  els.hallFilterList.querySelectorAll("[data-hall-filter]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.hallFilter = button.dataset.hallFilter;
+      renderSpecimenHall();
+      if (window.lucide) window.lucide.createIcons();
+    });
+  });
+
+  document.querySelectorAll("[data-hall-material]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.hallMaterial);
+      if (Number.isFinite(index)) openMaterialCard(index);
+    });
+  });
+
+  document.querySelectorAll("[data-hall-showcase]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.hallShowcase);
+      if (Number.isFinite(index)) enterExplorer(index, { toastMessage: `已打开${cells[index].title} 3D 展示` });
+    });
+  });
+
+  document.querySelector("[data-upload-specimen]")?.addEventListener("click", () => {
+    els.specimenUploadInput?.click();
+  });
+}
+
+function enterExplorer(index = state.cellIndex, options = {}) {
+  state.screen = "explore";
+  state.cellIndex = normalizeCellIndex(index);
+  state.isStageSwitching = false;
+  stageSwitch.phase = "idle";
+  stageSwitch.pendingIndex = null;
+  resetObservationState();
+  closeOnboardingPrompt({ markSeen: true });
+  closeMaterialCard();
+  updateAll();
+  updateScreenState();
+  window.scrollTo(0, 0);
+  resize();
+  showToast(options.toastMessage || `已进入${currentCell().title}`);
+}
+
+function showGalleryHome() {
+  state.screen = "gallery";
+  closePanel();
+  closeSettingsModal();
+  closeMaterialCard();
+  updateScreenState();
+  renderSpecimenHall();
+  updateProgress();
+  updateNavState();
+  window.scrollTo(0, 0);
+}
+
+function updateScreenState() {
+  els.specimenHall?.classList.toggle("is-hidden", state.screen !== "gallery");
+  els.exploreWorkspace?.classList.toggle("is-hidden", state.screen !== "explore");
+}
+
+function updateProgress() {
+  const progress = specimenProgress(currentCell());
+  els.progressLabel.textContent = state.screen === "explore" && state.evidenceTab === "task"
+    ? `已完成 ${Math.min(2, progress.explored)}/4`
+    : `已探索 ${progress.explored}/${progress.total}`;
+  const percent = Math.max(4, Math.round((progress.explored / progress.total) * 100));
+  els.progressBar.style.width = `${percent}%`;
+}
+
 function renderCellList() {
-  els.cellList.innerHTML = cells.map((cell, index) => `
+  const specimenCards = cells.map((cell, index) => `
     <button class="cell-card ${index === state.cellIndex ? "is-active" : ""}" type="button" data-cell-index="${index}" style="--accent:${cell.accent}" ${state.isStageSwitching ? "disabled" : ""}>
       <span class="thumb ${cell.thumb} has-image"><img src="${cell.thumbImage}" alt="${cell.title}" loading="eager"></span>
       <span>
         <span class="cell-name">${cell.title}</span>
         <span class="cell-subtitle">${cell.type}</span>
       </span>
-      <span class="star">★</span>
+      <span class="cell-status">${specimenStatusCopy(cell, index === state.cellIndex)}</span>
+      <i data-lucide="chevron-right"></i>
     </button>
   `).join("");
-  els.cellList.querySelectorAll(".cell-card").forEach((button) => {
+  const addCard = `
+    <button class="cell-card stage-add-cell-card" type="button" data-stage-upload-specimen style="--accent:#004737">
+      <span class="thumb add-cell-thumb"><i data-lucide="plus"></i></span>
+      <span>
+        <span class="cell-name">添加模式</span>
+        <span class="cell-subtitle">上传自己的 .glb 3D 标本</span>
+      </span>
+      <span class="cell-status">上传</span>
+      <i data-lucide="upload"></i>
+    </button>
+  `;
+  els.cellList.innerHTML = `${specimenCards}${addCard}`;
+  els.cellList.querySelectorAll(".cell-card[data-cell-index]").forEach((button) => {
     button.addEventListener("click", () => {
       switchCellTo(Number(button.dataset.cellIndex));
     });
+  });
+  els.cellList.querySelector("[data-stage-upload-specimen]")?.addEventListener("click", () => {
+    els.specimenUploadInput?.click();
   });
   updateCellSwitchControls();
 }
 
 function renderOrganelleList() {
-  const part = selectedPartData();
-  els.organelleList.innerHTML = currentCell().parts.map((item) => `
-    <button class="organelle-button ${item.name === part.name ? "is-active" : ""}" type="button" data-part="${item.name}" style="color:${item.color}">
-      <span class="part-dot"></span>
-      <span>
-        <span class="organelle-name">${item.name}</span>
-        <span class="organelle-meta">${item.tag}</span>
-      </span>
-    </button>
+  if (!els.organelleList) return;
+  const selected = selectedPartData();
+  els.organelleList.innerHTML = groupParts().map((group) => `
+    <section class="organelle-group">
+      <h3><i data-lucide="${group.icon}"></i>${group.name}</h3>
+      ${group.parts.map((item) => {
+        const globalIndex = currentCell().parts.findIndex((part) => part.name === item.name);
+        const explored = structureExplored(item, globalIndex);
+        const active = item.name === selected.name;
+        const status = active ? (state.evidenceTab === "compare" ? "当前对比" : state.evidenceTab === "task" ? "当前观察" : "当前查看") : explored ? "已探索" : "未探索";
+        return `
+          <button class="organelle-button ${active ? "is-active" : ""} ${explored ? "is-explored" : ""}" type="button" data-part="${item.name}" style="--part-color:${item.color}">
+            <span class="part-dot"></span>
+            <span>
+              <span class="organelle-name">${item.name}</span>
+              <span class="organelle-meta">${item.tag}</span>
+            </span>
+            <span class="structure-status">${status}</span>
+          </button>
+        `;
+      }).join("")}
+    </section>
   `).join("");
   els.organelleList.querySelectorAll(".organelle-button").forEach((button) => {
     button.addEventListener("click", () => {
       state.viewMode = "labels";
-      selectPart(button.dataset.part, { focus: false });
+      selectPart(button.dataset.part, { focus: false, inspectorTab: "archive" });
     });
   });
 }
 
 function renderMicrographs() {
+  if (!els.micrographList) {
+    if (state.evidenceTab === "micro") renderEvidenceContent();
+    return;
+  }
   const cell = currentCell();
   const names = [...cell.micro, "添加视野"];
   els.micrographList.innerHTML = names.map((name, index) => `
@@ -1522,6 +1909,10 @@ function renderMicrographs() {
 }
 
 function renderCompare() {
+  if (!els.compareCard) {
+    if (state.evidenceTab === "compare") renderEvidenceContent();
+    return;
+  }
   const cell = currentCell();
   const other = currentCompareCell();
   els.compareCard.innerHTML = `
@@ -1541,6 +1932,245 @@ function renderCompare() {
   els.compareCard.querySelector(".compare-button").addEventListener("click", () => {
     openPanel("compare");
   });
+}
+
+function evidenceMicroContent() {
+  const cell = currentCell();
+  const selected = Math.min(state.activeMicroIndex, cell.micro.length - 1);
+  return `
+    <div class="evidence-grid">
+      ${cell.micro.map((name, index) => `
+        <button class="evidence-card ${index === selected ? "is-active" : ""}" type="button" data-evidence-micro="${index}">
+          <img src="${cell.microImages?.[index] || `./assets/thumbs/${cell.id}-micro-${index + 1}.webp`}" alt="${name}" loading="eager">
+          <strong>${name}</strong>
+          <span>${index === 0 ? "整体结构" : index === 1 ? "染色识别" : "超微细节"}</span>
+        </button>
+      `).join("")}
+      <button class="evidence-card add-note-card" type="button" data-evidence-action="note-micro">
+        <i data-lucide="plus"></i>
+        <strong>添加到笔记</strong>
+        <span>保存证据与想法</span>
+      </button>
+    </div>
+  `;
+}
+
+function evidenceCompareContent() {
+  const cell = currentCell();
+  const other = currentCompareCell();
+  return `
+    <div class="compare-workbench">
+      <article class="compare-model-card">
+        <header><i data-lucide="leaf"></i><strong>${cell.title}</strong><span>${cell.type}</span></header>
+        <img src="${cell.image}" alt="${cell.title}" loading="eager">
+        <p><strong>${selectedPartData().name}</strong>：${selectedPartData().note || cell.note}</p>
+        <button type="button" data-evidence-action="open-compare">查看详情 <i data-lucide="arrow-right"></i></button>
+      </article>
+      <button class="compare-swap" type="button" data-evidence-action="swap-compare" title="切换对比标本">
+        <i data-lucide="arrow-left-right"></i>
+      </button>
+      <article class="compare-model-card">
+        <header><i data-lucide="box"></i><strong>${other.title}</strong><span>${other.type}</span></header>
+        <img src="${other.image}" alt="${other.title}" loading="eager">
+        <p><strong>代表结构</strong>：${other.parts.slice(0, 3).map((part) => part.name).join("、")}</p>
+        <button type="button" data-evidence-action="switch-compare-cell">切换到${other.title}</button>
+      </article>
+      <aside class="compare-conclusion">
+        <h3>对比结论</h3>
+        <p><strong>共同点：</strong>${cell.title}和${other.title}都通过内部结构分工维持生命活动。</p>
+        <p><strong>差异点：</strong>${cell.fun.replace("小知识：", "")}</p>
+        <button type="button" data-evidence-action="note-compare"><i data-lucide="download"></i> 记录对比卡</button>
+      </aside>
+    </div>
+  `;
+}
+
+function evidenceTaskContent() {
+  const cell = currentCell();
+  const part = selectedPartData();
+  const tasks = [
+    { label: `定位${part.name}`, status: "done" },
+    { label: `观察${part.name}结构`, status: "done" },
+    { label: `记录${part.name}特征`, status: "active" },
+    { label: "理解其作用", status: "todo" }
+  ];
+  return `
+    <div class="task-workbench">
+      <div class="task-list">
+        ${tasks.map((task, index) => `
+          <article class="task-step is-${task.status}">
+            <span>${task.status === "done" ? '<i data-lucide="check"></i>' : index + 1}</span>
+            <strong>${task.label}</strong>
+            <small>${task.status === "done" ? "已完成" : task.status === "active" ? "进行中" : "待开始"}</small>
+          </article>
+        `).join("")}
+      </div>
+      <aside class="quiz-card">
+        <span class="section-kicker"><i data-lucide="badge-help"></i>小测模式</span>
+        <h3>${part.name}的主要作用是什么？</h3>
+        <button type="button" data-evidence-quiz="wrong">A 储存遗传物质</button>
+        <button type="button" data-evidence-quiz="correct">B ${part.tag}</button>
+        <button type="button" data-evidence-quiz="wrong">C 合成蛋白质</button>
+        <button type="button" data-evidence-quiz="wrong">D 控制物质进出</button>
+        <p class="quiz-feedback" data-quiz-feedback><i data-lucide="circle-help"></i>请选择一个答案完成观察任务。</p>
+      </aside>
+    </div>
+  `;
+}
+
+const evidenceTitles = {
+  micro: "显微观察",
+  compare: "横向对比",
+  task: "观察任务"
+};
+
+function evidenceHtml(kind = state.evidenceTab) {
+  const renderers = {
+    micro: evidenceMicroContent,
+    compare: evidenceCompareContent,
+    task: evidenceTaskContent
+  };
+  return (renderers[kind] || evidenceMicroContent)();
+}
+
+function isEvidenceModalOpen() {
+  return Boolean(els.evidenceModal && !els.evidenceModal.hidden);
+}
+
+function advanceEvidenceStep(kind) {
+  state.inspectorTab = "evidence";
+  state.evidenceTab = kind;
+  updateDetail();
+  if (isEvidenceModalOpen()) {
+    renderEvidenceModalContent(kind);
+  } else {
+    renderEvidenceContent();
+  }
+  updateProgress();
+}
+
+function handleEvidenceInteraction(button) {
+  if (!button) return;
+  if (button.dataset.evidenceMicro != null) {
+    state.activeMicroIndex = Number(button.dataset.evidenceMicro);
+    showToast(`已选中${currentCell().micro[state.activeMicroIndex]}`);
+    if (isEvidenceModalOpen()) {
+      renderEvidenceModalContent("micro");
+    } else {
+      renderEvidenceContent();
+    }
+    return;
+  }
+  if (button.dataset.evidenceQuiz != null) {
+    const correct = button.dataset.evidenceQuiz === "correct";
+    const quiz = button.closest(".quiz-card");
+    quiz?.querySelectorAll("[data-evidence-quiz]").forEach((choice) => {
+      choice.classList.toggle("is-chosen", choice === button);
+      choice.classList.toggle("is-correct", correct && choice === button);
+      choice.classList.toggle("is-wrong", !correct && choice === button);
+    });
+    const feedback = quiz?.querySelector("[data-quiz-feedback]");
+    if (feedback) {
+      feedback.classList.toggle("is-correct", correct);
+      feedback.textContent = correct
+        ? `回答正确！${selectedPartData().note || currentCell().note}`
+        : "再观察一下右侧结构档案和模型标签，答案与当前结构的功能描述有关。";
+    }
+    showToast(correct ? "观察任务已完成" : "再想想这个结构的主要作用");
+    return;
+  }
+
+  const action = button.dataset.evidenceAction;
+  if (!action) return;
+  if (action === "note-micro") {
+    const cell = currentCell();
+    insertCurrentObservation(`${cell.title} / ${cell.micro[state.activeMicroIndex]}：记录显微视野下的细胞边界、染色差异和可见结构。`);
+    showToast("显微证据已记录，进入横向对比");
+    advanceEvidenceStep("compare");
+  }
+  if (action === "open-compare") advanceEvidenceStep("compare");
+  if (action === "note-compare") {
+    const cell = currentCell();
+    const other = currentCompareCell();
+    insertCurrentObservation(`${cell.title} vs ${other.title}：比较${selectedPartData().name}与代表结构的功能差异。`);
+    showToast("对比卡已记录，进入观察任务");
+    advanceEvidenceStep("task");
+  }
+  if (action === "swap-compare" || action === "switch-compare-cell") {
+    const other = currentCompareCell();
+    const index = cells.findIndex((item) => item.id === other.id);
+    if (index >= 0) {
+      switchCellTo(index, { toast: false });
+      state.inspectorTab = "evidence";
+      state.evidenceTab = "compare";
+      openEvidenceModal("compare");
+    }
+  }
+}
+
+function bindEvidenceInteractions(root) {
+  if (!root) return;
+  if (root.__evidenceClickHandler) {
+    root.removeEventListener("click", root.__evidenceClickHandler);
+  }
+  root.__evidenceClickHandler = (event) => {
+    const button = event.target.closest("[data-evidence-micro], [data-evidence-action], [data-evidence-quiz]");
+    if (!button || !root.contains(button)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    handleEvidenceInteraction(button);
+  };
+  root.addEventListener("click", root.__evidenceClickHandler);
+}
+
+function renderEvidenceContent() {
+  if (!els.evidenceContent) return;
+  els.evidenceTabs?.querySelectorAll("[data-evidence-tab]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.evidenceTab === state.evidenceTab);
+  });
+  els.evidenceContent.innerHTML = evidenceHtml();
+  bindEvidenceInteractions(els.evidenceContent);
+  updateEvidenceLaunchState();
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function renderEvidenceModalContent(kind = state.evidenceTab) {
+  if (!els.evidenceModalContent || !isEvidenceModalOpen()) return;
+  state.evidenceTab = kind;
+  if (els.evidenceModalTitle) els.evidenceModalTitle.textContent = evidenceTitles[kind] || "证据与任务";
+  els.evidenceModalContent.dataset.evidenceKind = kind;
+  els.evidenceModalContent.innerHTML = evidenceHtml(kind);
+  bindEvidenceInteractions(els.evidenceModalContent);
+  updateEvidenceLaunchState();
+  renderOrganelleList();
+  updateProgress();
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function openEvidenceModal(kind = "micro") {
+  if (!els.evidenceModal || !els.evidenceModalBackdrop) return;
+  state.inspectorTab = "evidence";
+  state.evidenceTab = kind;
+  els.evidenceModalBackdrop.hidden = false;
+  els.evidenceModal.hidden = false;
+  updateDetail();
+  renderEvidenceModalContent(kind);
+  els.evidenceModalBackdrop.classList.add("is-open");
+  els.evidenceModal.classList.add("is-open");
+  updateEvidenceLaunchState();
+  updateProgress();
+}
+
+function closeEvidenceModal() {
+  if (!els.evidenceModal || !els.evidenceModalBackdrop) return;
+  els.evidenceModal.classList.remove("is-open");
+  els.evidenceModalBackdrop.classList.remove("is-open");
+  window.setTimeout(() => {
+    if (!els.evidenceModal.classList.contains("is-open")) {
+      els.evidenceModal.hidden = true;
+      els.evidenceModalBackdrop.hidden = true;
+    }
+  }, 180);
 }
 
 function escapeHtml(value) {
@@ -1586,11 +2216,303 @@ function closePanel() {
   }, 180);
 }
 
+function renderSettingsModal() {
+  if (!els.settingsContent) return;
+  els.settingsContent.innerHTML = `
+    <section class="settings-card">
+      <h3><i data-lucide="gauge"></i>显示设置</h3>
+      <div class="segmented-setting" data-setting-group="theme">
+        <span>主题</span>
+        <button class="is-active" type="button">浅色</button>
+        <button type="button">深色</button>
+        <button type="button">跟随系统</button>
+      </div>
+      <div class="segmented-setting" data-setting-group="background">
+        <span>模型背景</span>
+        <button class="is-active" type="button">网格</button>
+        <button type="button">纯色</button>
+        <button type="button">渐变</button>
+      </div>
+      <label class="setting-switch">
+        <span><strong>默认标签</strong><small>进入标本后显示结构名称</small></span>
+        <input type="checkbox" data-setting="labels" ${state.viewMode === "labels" ? "checked" : ""}>
+      </label>
+    </section>
+    <section class="settings-card">
+      <h3><i data-lucide="book-open"></i>学习设置</h3>
+      <div class="segmented-setting">
+        <span>难度</span>
+        <button class="is-active" type="button">基础</button>
+        <button type="button">进阶</button>
+        <button type="button">专业</button>
+      </div>
+      <div class="segmented-setting">
+        <span>术语解释</span>
+        <button class="is-active" type="button">自动显示</button>
+        <button type="button">点击显示</button>
+      </div>
+      <label class="setting-switch">
+        <span><strong>小测提示</strong><small>任务模式中显示答案反馈</small></span>
+        <input type="checkbox" checked>
+      </label>
+    </section>
+    <section class="settings-card">
+      <h3><i data-lucide="activity"></i>性能设置</h3>
+      <div class="segmented-setting">
+        <span>3D 质量</span>
+        <button type="button">流畅</button>
+        <button class="is-active" type="button">标准</button>
+        <button type="button">高清</button>
+      </div>
+      <label class="setting-switch">
+        <span><strong>自动旋转</strong><small>模型默认慢速旋转</small></span>
+        <input type="checkbox" data-setting="autoRotate" ${state.autoRotate ? "checked" : ""}>
+      </label>
+      <div class="segmented-setting">
+        <span>动画效果</span>
+        <button type="button">减少</button>
+        <button class="is-active" type="button">标准</button>
+      </div>
+    </section>
+    <div class="settings-footer">
+      <button type="button" data-settings-action="reset"><i data-lucide="rotate-ccw"></i>恢复默认</button>
+      <button class="primary-action" type="button" data-settings-action="save"><i data-lucide="check"></i>保存设置</button>
+    </div>
+  `;
+
+  els.settingsContent.querySelectorAll("[data-setting]").forEach((input) => {
+    input.addEventListener("change", () => {
+      const key = input.dataset.setting;
+      if (key === "autoRotate") state.autoRotate = input.checked;
+      if (key === "labels") state.viewMode = input.checked ? "labels" : "model";
+      updateToolbar();
+      updateLabels();
+      renderEvidenceContent();
+    });
+  });
+
+  els.settingsContent.querySelectorAll("[data-settings-action]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const action = button.dataset.settingsAction;
+      if (action === "reset") {
+        resetObservationState({ resetPart: false, resetMicro: false });
+        updateToolbar();
+        renderSettingsModal();
+        showToast("已恢复默认设置");
+      }
+      if (action === "save") {
+        closeSettingsModal();
+        showToast("设置已保存");
+      }
+    });
+  });
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function openSettingsModal() {
+  closePanel();
+  els.settingsModal.hidden = false;
+  els.settingsBackdrop.hidden = false;
+  renderSettingsModal();
+  window.requestAnimationFrame(() => {
+    els.settingsModal.classList.add("is-open");
+    els.settingsBackdrop.classList.add("is-open");
+    updateNavState();
+  });
+}
+
+function closeSettingsModal() {
+  if (!els.settingsModal || els.settingsModal.hidden) return;
+  els.settingsModal.classList.remove("is-open");
+  els.settingsBackdrop.classList.remove("is-open");
+  window.setTimeout(() => {
+    if (!els.settingsModal.classList.contains("is-open")) {
+      els.settingsModal.hidden = true;
+      els.settingsBackdrop.hidden = true;
+    }
+    updateNavState();
+  }, 180);
+}
+
+function setOnboardingSeen() {
+  try {
+    localStorage.setItem(onboardingStorageKey, "1");
+  } catch {
+    // The prompt is non-critical; ignore storage failures.
+  }
+}
+
+function hasSeenOnboarding() {
+  try {
+    return localStorage.getItem(onboardingStorageKey) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function openOnboardingPrompt({ force = false } = {}) {
+  if (!els.onboardingPrompt || state.screen !== "gallery") return;
+  if (!force && hasSeenOnboarding()) return;
+  els.onboardingPrompt.hidden = false;
+  els.onboardingBackdrop.hidden = false;
+  window.requestAnimationFrame(() => {
+    els.onboardingPrompt.classList.add("is-open");
+    els.onboardingBackdrop.classList.add("is-open");
+  });
+  if (!force) setOnboardingSeen();
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function closeOnboardingPrompt({ markSeen = false } = {}) {
+  if (!els.onboardingPrompt || els.onboardingPrompt.hidden) return;
+  if (markSeen) setOnboardingSeen();
+  els.onboardingPrompt.classList.remove("is-open");
+  els.onboardingBackdrop.classList.remove("is-open");
+  window.setTimeout(() => {
+    if (!els.onboardingPrompt.classList.contains("is-open")) {
+      els.onboardingPrompt.hidden = true;
+      els.onboardingBackdrop.hidden = true;
+    }
+  }, 180);
+}
+
+function materialSlidesForCell(cell) {
+  const slides = (cell.parts || []).filter((part) => part.image);
+  if (slides.length) return slides;
+  return [
+    {
+      name: cell.title,
+      tag: cell.type,
+      color: cell.accent,
+      image: cell.occursImage || cell.image,
+      facts: { "类型": cell.type, "位置": cell.occurs || "微观结构", "用途": "资料查看" },
+      note: cell.note
+    }
+  ];
+}
+
+function normalizeMaterialPartIndex(index, total) {
+  if (!total) return 0;
+  return ((Math.trunc(Number(index) || 0) % total) + total) % total;
+}
+
+function openMaterialCard(index) {
+  if (!els.materialCard || !els.materialContent || !els.materialBackdrop) return;
+  state.materialCellIndex = normalizeCellIndex(index);
+  state.materialPartIndex = 0;
+  renderMaterialContent();
+  els.materialCard.hidden = false;
+  els.materialBackdrop.hidden = false;
+  window.requestAnimationFrame(() => {
+    els.materialCard.classList.add("is-open");
+    els.materialBackdrop.classList.add("is-open");
+  });
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function renderMaterialContent() {
+  if (!els.materialContent) return;
+  const cellIndex = normalizeCellIndex(state.materialCellIndex);
+  const cell = cells[cellIndex];
+  const slides = materialSlidesForCell(cell);
+  const partIndex = normalizeMaterialPartIndex(state.materialPartIndex, slides.length);
+  const activePart = slides[partIndex] || slides[0];
+  state.materialCellIndex = cellIndex;
+  state.materialPartIndex = partIndex;
+  const facts = Object.entries(activePart.facts || {}).slice(0, 4);
+  els.materialContent.innerHTML = `
+    <button class="material-close" type="button" data-material-close title="关闭资料卡">
+      <i data-lucide="x"></i>
+    </button>
+    <div class="material-visual">
+      ${slides.length > 1 ? `
+        <button class="material-carousel-button is-prev" type="button" data-material-shift="-1" title="上一张结构插画">
+          <i data-lucide="chevron-left"></i>
+        </button>
+      ` : ""}
+      <img src="${activePart.image}" alt="${cell.title}${activePart.name}资料配图" loading="eager">
+      ${slides.length > 1 ? `
+        <button class="material-carousel-button is-next" type="button" data-material-shift="1" title="下一张结构插画">
+          <i data-lucide="chevron-right"></i>
+        </button>
+      ` : ""}
+      <span class="material-counter">${partIndex + 1}/${slides.length}</span>
+    </div>
+    <div class="material-body">
+      <span class="section-kicker"><i data-lucide="book-open"></i>标本资料</span>
+      <h2 id="material-title">${escapeHtml(cell.title)}</h2>
+      <p class="material-type">${escapeHtml(cell.type)} · ${escapeHtml(cell.occurs || "微观生命结构")}</p>
+      <p>${escapeHtml(cell.note)}</p>
+      <div class="material-highlight" style="--accent:${activePart.color || cell.accent}">
+        <strong>${escapeHtml(activePart.name || "核心结构")}</strong>
+        <span>${escapeHtml(activePart.tag || "观察重点")}</span>
+        <p>${escapeHtml(activePart.note || cell.fun.replace("小知识：", ""))}</p>
+      </div>
+      ${facts.length ? `
+        <dl class="material-facts">
+          ${facts.map(([term, value]) => `<dt>${escapeHtml(term)}</dt><dd>${escapeHtml(value)}</dd>`).join("")}
+        </dl>
+      ` : ""}
+      <div class="material-chips">
+        ${slides.map((part, index) => `
+          <button class="${index === partIndex ? "is-active" : ""}" type="button" style="--part-color:${part.color || cell.accent}" data-material-part="${index}">
+            ${escapeHtml(part.name)}
+          </button>
+        `).join("")}
+      </div>
+      <button class="primary-action material-ok" type="button" data-material-close>知道了</button>
+    </div>
+  `;
+  bindMaterialContentEvents();
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function bindMaterialContentEvents() {
+  els.materialContent.querySelectorAll("[data-material-close]").forEach((button) => {
+    button.addEventListener("click", closeMaterialCard);
+  });
+  els.materialContent.querySelectorAll("[data-material-shift]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.materialPartIndex += Number(button.dataset.materialShift) || 0;
+      renderMaterialContent();
+    });
+  });
+  els.materialContent.querySelectorAll("[data-material-part]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.materialPartIndex = Number(button.dataset.materialPart) || 0;
+      renderMaterialContent();
+    });
+  });
+}
+
+function closeMaterialCard() {
+  if (!els.materialCard || els.materialCard.hidden || !els.materialBackdrop) return;
+  els.materialCard.classList.remove("is-open");
+  els.materialBackdrop.classList.remove("is-open");
+  window.setTimeout(() => {
+    if (!els.materialCard.classList.contains("is-open")) {
+      els.materialCard.hidden = true;
+      els.materialBackdrop.hidden = true;
+    }
+  }, 180);
+}
+
+function handleMaterialOutsideClick(event) {
+  if (!els.materialCard || els.materialCard.hidden) return;
+  if (els.materialCard.contains(event.target)) return;
+  closeMaterialCard();
+}
+
 function updateNavState() {
   const drawerOpen = !els.drawer.hidden && els.drawer.classList.contains("is-open");
+  const settingsOpen = els.settingsModal && !els.settingsModal.hidden && els.settingsModal.classList.contains("is-open");
   els.topNavButtons.forEach((button) => {
-    const panel = button.dataset.panel;
-    const active = drawerOpen ? panel === state.activePanel : panel === "gallery";
+    const nav = button.dataset.nav;
+    const active = settingsOpen
+      ? nav === "settings"
+      : drawerOpen
+        ? nav === state.activePanel
+        : nav === (state.screen === "gallery" ? "gallery" : "showcase");
     button.classList.toggle("is-active", active);
   });
 }
@@ -1642,7 +2564,6 @@ function renderLibraryPanel() {
     </dl>
     <div class="drawer-actions">
       <button type="button" data-action="show-labels">在模型中标注</button>
-      <button type="button" data-action="toggle-section">切换剖切</button>
       <button type="button" data-action="note-current">记入笔记</button>
     </div>
   `);
@@ -1672,16 +2593,12 @@ function renderSettingsPanel() {
       <input type="checkbox" data-setting="autoRotate" ${state.autoRotate ? "checked" : ""}>
     </label>
     <label class="setting-row">
-      <span><strong>标签讲解</strong><small>显示结构名称随动标注</small></span>
+      <span><strong>标签讲解</strong><small>固定显示结构名称标注</small></span>
       <input type="checkbox" data-setting="labels" ${state.viewMode === "labels" ? "checked" : ""}>
     </label>
     <label class="setting-row">
-      <span><strong>弱化背景</strong><small>降低舞台干扰，突出结构阅读</small></span>
+      <span><strong>灰模显示</strong><small>用灰模材质查看整体体块关系</small></span>
       <input type="checkbox" data-setting="dimOthers" ${state.dimOthers ? "checked" : ""}>
-    </label>
-    <label class="setting-row">
-      <span><strong>四层剖切</strong><small>查看模型的上下分层结构</small></span>
-      <input type="checkbox" data-setting="crossSection" ${state.crossSection ? "checked" : ""}>
     </label>
     <div class="drawer-actions">
       <button type="button" data-action="reset-view">恢复默认视角</button>
@@ -1754,9 +2671,7 @@ function insertCurrentObservation(extra = "") {
 function bindPanelEvents() {
   els.drawerContent.querySelectorAll("[data-gallery-cell]").forEach((button) => {
     button.addEventListener("click", () => {
-      state.cellIndex = Number(button.dataset.galleryCell);
-      resetObservationState();
-      updateAll();
+      switchCellTo(Number(button.dataset.galleryCell), { toast: false });
       openPanel("gallery");
       showToast(`已切换到${currentCell().title}`);
     });
@@ -1785,13 +2700,6 @@ function bindPanelEvents() {
       if (key === "autoRotate") state.autoRotate = input.checked;
       if (key === "labels") state.viewMode = input.checked ? "labels" : "model";
       if (key === "dimOthers") state.dimOthers = input.checked;
-      if (key === "crossSection") {
-        state.crossSection = input.checked;
-        if (state.crossSection) {
-          state.viewMode = "model";
-          state.autoRotate = false;
-        }
-      }
       updateToolbar();
       updateLabels();
       renderActivePanel();
@@ -1805,14 +2713,6 @@ function bindPanelEvents() {
         state.viewMode = "labels";
         updateToolbar();
         updateLabels();
-      }
-      if (action === "toggle-section") {
-        state.crossSection = !state.crossSection;
-        if (state.crossSection) {
-          state.viewMode = "model";
-          state.autoRotate = false;
-        }
-        updateToolbar();
       }
       if (action === "insert-observation" || action === "note-current") insertCurrentObservation();
       if (action === "clear-notes") {
@@ -1848,18 +2748,78 @@ function bindPanelEvents() {
   });
 }
 
+function renderInspectorTabContent(cell, part) {
+  const entries = Object.entries(part.facts);
+  return `
+    <section class="inspector-section inspector-archive">
+      <h4><i data-lucide="file-text"></i>结构档案</h4>
+      <p>${part.note || cell.note}</p>
+    </section>
+    <dl class="fact-list inspector-facts">
+      ${entries.map(([term, value]) => `<dt>${term}</dt><dd>${value}</dd>`).join("")}
+    </dl>
+    <section class="knowledge-card">
+      <span class="section-kicker"><i data-lucide="lightbulb"></i>小知识</span>
+      <p>${cell.fun.replace("小知识：", "")}</p>
+    </section>
+    <section class="related-parts">
+      <h4>相关结构</h4>
+      <div>
+        ${cell.parts.filter((item) => item.name !== part.name).slice(0, 4).map((item) => `
+          <button type="button" data-related-part="${item.name}">${item.name}</button>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function bindInspectorEvents() {
+  els.inspectorContent?.querySelectorAll("[data-related-part]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.viewMode = "labels";
+      selectPart(button.dataset.relatedPart, { focus: false, inspectorTab: "archive" });
+    });
+  });
+}
+
+function renderQuickPartList() {
+  if (!els.quickPartList) return;
+  els.quickPartList.innerHTML = currentCell().parts.slice(0, 4).map((part) => `
+    <button type="button" data-quick-part="${part.name}" style="--part-color:${part.color}">
+      <span class="part-dot"></span>${part.name}
+    </button>
+  `).join("");
+  els.quickPartList.querySelectorAll("[data-quick-part]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.viewMode = "labels";
+      selectPart(button.dataset.quickPart, { focus: false, inspectorTab: "archive" });
+    });
+  });
+}
+
 function updateDetail() {
   const cell = currentCell();
   const part = selectedPartData();
+  const hasPart = Boolean(part);
+  els.inspectorEmpty?.classList.toggle("is-hidden", hasPart);
+  els.inspectorDetail?.classList.toggle("is-hidden", !hasPart);
+  renderQuickPartList();
+  if (!hasPart) return;
   els.detailName.textContent = part.name;
   els.detailSubtitle.textContent = part.tag;
-  els.bioNote.textContent = part.note || cell.note;
-  els.funFact.textContent = cell.fun;
+  if (els.bioNote) els.bioNote.textContent = part.note || cell.note;
+  if (els.funFact) els.funFact.textContent = cell.fun;
   els.detailIcon.style.setProperty("--accent", part.color);
   els.detailIcon.classList.toggle("has-image", Boolean(part.image));
   els.detailIcon.innerHTML = part.image ? `<img src="${part.image}" alt="${part.name}" loading="eager">` : "";
-  els.detailFacts.innerHTML = Object.entries(part.facts).map(([term, value]) => `<dt>${term}</dt><dd>${value}</dd>`).join("");
+  if (els.detailFacts) els.detailFacts.innerHTML = Object.entries(part.facts).map(([term, value]) => `<dt>${term}</dt><dd>${value}</dd>`).join("");
+  if (els.inspectorContent) {
+    els.inspectorContent.innerHTML = renderInspectorTabContent(cell, part);
+    bindInspectorEvents();
+  }
+  syncInspectorPanels();
   els.favoriteButton.classList.toggle("is-active", state.favorite);
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function updateLabels() {
@@ -1873,7 +2833,7 @@ function updateLabels() {
     label.addEventListener("click", () => {
       const part = cell.parts[Number(label.dataset.labelIndex)];
       if (!part) return;
-      selectPart(part.name, { focus: false });
+      selectPart(part.name, { focus: false, inspectorTab: "archive" });
     });
   });
   els.labelLayer.classList.toggle("is-visible", state.viewMode === "labels");
@@ -1888,48 +2848,52 @@ function positionLabels() {
   els.labelLayer.classList.toggle("is-visible", shouldShow);
   projectedLabelPoints = [];
 
-  const anchors = modelGroup?.userData.labelAnchors?.children;
   const rect = wrap.getBoundingClientRect();
-  const fallbackPositions = [
-    [18, 42],
-    [66, 32],
-    [26, 70],
-    [76, 58],
-    [48, 78]
-  ];
-
-  if (!anchors?.length) {
-    labels.forEach((label, index) => {
-      const [x, y] = fallbackPositions[index] || [50, 50];
-      const useFallback = !currentCell().modelUrl;
-      label.style.opacity = useFallback && shouldShow ? "1" : "0";
-      label.style.transform = `translate3d(${(x / 100) * rect.width}px, ${(y / 100) * rect.height}px, 0) translate(-50%, -50%)`;
-      label.classList.toggle("is-selected", currentCell().parts[index]?.name === state.selectedPart);
-      projectedLabelPoints[index] = {
-        x: (x / 100) * rect.width,
-        y: (y / 100) * rect.height,
-        visible: useFallback,
-        part: currentCell().parts[index]
-      };
-    });
-    return;
+  const anchors = modelGroup?.userData?.labelAnchors?.children || [];
+  modelGroup?.updateMatrixWorld(true);
+  let centerX = rect.width * 0.5;
+  let centerY = rect.height * 0.5;
+  if (modelGroup) {
+    labelCenterProjection.setFromMatrixPosition(modelGroup.matrixWorld).project(camera);
+    centerX = (labelCenterProjection.x * 0.5 + 0.5) * rect.width;
+    centerY = (-labelCenterProjection.y * 0.5 + 0.5) * rect.height;
   }
-
-  modelGroup.updateMatrixWorld(true);
+  const cellId = currentCell().id;
+  const lockedRadii = centerLockedLabelRadii[cellId];
+  const lockedAngles = centerLockedLabelAngles[cellId];
   labels.forEach((label, index) => {
+    const part = currentCell().parts[index];
     const anchor = anchors[index];
-    if (!anchor) {
-      label.style.opacity = "0";
-      return;
+    let x = rect.width * (0.5 + (index - labels.length / 2) * 0.06);
+    let y = rect.height * (0.56 + index * 0.035);
+    let inFrame = false;
+    if (anchor) {
+      labelProjection.setFromMatrixPosition(anchor.matrixWorld).project(camera);
+      x = (labelProjection.x * 0.5 + 0.5) * rect.width;
+      y = (-labelProjection.y * 0.5 + 0.5) * rect.height;
+      if (lockedRadii?.[index]) {
+        let dx = x - centerX;
+        let dy = y - centerY;
+        const currentDistance = Math.hypot(dx, dy);
+        if (currentDistance < 4) {
+          const fallbackAngle = (lockedAngles?.[index] ?? index * 0.9) + (modelGroup?.rotation.y || 0) * 0.35;
+          dx = Math.cos(fallbackAngle);
+          dy = Math.sin(fallbackAngle);
+        } else {
+          dx /= currentDistance;
+          dy /= currentDistance;
+        }
+        const fixedDistance = Math.min(rect.width, rect.height) * lockedRadii[index];
+        x = centerX + dx * fixedDistance;
+        y = centerY + dy * fixedDistance;
+      }
+      inFrame = labelProjection.z > -1 && labelProjection.z < 1 && x > -90 && x < rect.width + 90 && y > -60 && y < rect.height + 80;
     }
-    labelProjection.setFromMatrixPosition(anchor.matrixWorld).project(camera);
-    const visible = labelProjection.z > -1 && labelProjection.z < 1;
-    const x = (labelProjection.x * 0.5 + 0.5) * rect.width;
-    const y = (-labelProjection.y * 0.5 + 0.5) * rect.height;
+    const visible = shouldShow && Boolean(part) && (!anchor || inFrame);
     label.style.opacity = visible ? "1" : "0";
     label.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
-    label.classList.toggle("is-selected", currentCell().parts[index]?.name === state.selectedPart);
-    projectedLabelPoints[index] = { x, y, visible, part: currentCell().parts[index] };
+    label.classList.toggle("is-selected", part?.name === state.selectedPart);
+    projectedLabelPoints[index] = { x, y, visible, part, anchor };
   });
 }
 
@@ -1949,22 +2913,38 @@ function updateSpecimenImage() {
 
 function updateHeader() {
   const cell = currentCell();
+  const part = selectedPartData();
   els.cellTitle.textContent = cell.title;
-  els.cellType.textContent = cell.type;
-  els.occursVisual.dataset.label = cell.occurs;
-  els.occursVisual.classList.toggle("has-image", Boolean(cell.occursImage));
-  els.occursVisual.innerHTML = cell.occursImage ? `<img src="${cell.occursImage}" alt="${cell.occurs}" loading="eager">` : "";
+  els.cellType.textContent = `${cell.type} · 当前标本`;
+  if (els.stageGuidance) {
+    els.stageGuidance.textContent = state.viewMode === "labels"
+      ? `正在观察${part.name}，可继续旋转模型确认它在细胞中的位置。`
+      : "点击左侧结构目录或 3D 模型中的细胞器开始观察。";
+  }
+  if (els.stageCurrentChip) {
+    els.stageCurrentChip.innerHTML = `<span style="background:${part.color}"></span> 当前选中：${part.name}`;
+  }
+  if (els.occursVisual) {
+    els.occursVisual.dataset.label = cell.occurs;
+    els.occursVisual.classList.toggle("has-image", Boolean(cell.occursImage));
+    els.occursVisual.innerHTML = cell.occursImage ? `<img src="${cell.occursImage}" alt="${cell.occurs}" loading="eager">` : "";
+  }
 }
 
 function updateAll() {
   const cell = currentCell();
   setTheme(cell);
+  updateScreenState();
   updateHeader();
   renderCellList();
   renderOrganelleList();
   renderMicrographs();
   renderCompare();
   updateDetail();
+  renderEvidenceContent();
+  renderEvidenceModalContent();
+  renderSpecimenHall();
+  updateProgress();
   updateLabels();
   updateSpecimenImage();
   rebuildModel();
@@ -1978,11 +2958,17 @@ function updateAll() {
 function updateToolbar() {
   updateStageModeState();
   updateCellSwitchControls();
-  els.crossToggle.checked = state.crossSection;
   els.rotateButton.classList.toggle("is-active", state.autoRotate);
   els.isolateButton.classList.toggle("is-active", state.isolate);
   els.hideButton.classList.toggle("is-active", state.dimOthers);
+  els.labelsButton?.classList.toggle("is-active", state.viewMode === "labels");
   els.specimenImage.classList.toggle("is-focused", state.isolate || state.dimOthers);
+  const rotateCopy = state.autoRotate ? "暂停自动旋转" : "恢复自动旋转";
+  els.rotateButton.title = rotateCopy;
+  els.rotateButton.setAttribute("aria-pressed", state.autoRotate ? "true" : "false");
+  els.isolateButton.setAttribute("aria-pressed", state.isolate ? "true" : "false");
+  els.hideButton.setAttribute("aria-pressed", state.dimOthers ? "true" : "false");
+  els.labelsButton?.setAttribute("aria-pressed", state.viewMode === "labels" ? "true" : "false");
   document.querySelectorAll(".mode-button").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.viewMode === state.viewMode);
   });
@@ -2014,15 +3000,37 @@ function updateCameraTween(now) {
   if (t >= 1) cameraTween.active = false;
 }
 
+function selectedStageLabelPoint() {
+  const rect = wrap.getBoundingClientRect();
+  const point = projectedLabelPoints[selectedPartIndex()];
+  if (point?.visible) {
+    return {
+      px: (point.x / Math.max(1, rect.width)) * 100,
+      py: (point.y / Math.max(1, rect.height)) * 100
+    };
+  }
+  return { px: 50, py: 50 };
+}
+
+function restoreCameraView() {
+  startCameraTween(defaultCameraPosition, defaultCameraTarget);
+  if (modelGroup) modelGroup.rotation.y = 0;
+}
+
 function focusSelectedPart() {
   if (!modelGroup) return;
-  const target = state.crossSection ? splitCameraTarget : defaultCameraTarget;
-  const position = state.crossSection ? splitCameraPosition : defaultCameraPosition;
+  const { px, py } = selectedStageLabelPoint();
+  const offsetX = ((px - 50) / 50) * 0.9;
+  const offsetY = ((50 - py) / 50) * 0.46;
+  const target = defaultCameraTarget.clone().add(new THREE.Vector3(offsetX, offsetY, 0));
+  const direction = defaultCameraPosition.clone().sub(defaultCameraTarget).normalize();
+  const zoomDistance = defaultCameraPosition.distanceTo(defaultCameraTarget) * 0.5;
+  const position = target.clone().add(direction.multiplyScalar(zoomDistance));
   startCameraTween(position, target);
 }
 
 function pickPartFromStage(event) {
-  if (!projectedLabelPoints.length || state.crossSection) return;
+  if (!projectedLabelPoints.length) return;
   const rect = canvas.getBoundingClientRect();
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
@@ -2036,7 +3044,7 @@ function pickPartFromStage(event) {
   });
   if (!best) return;
   state.viewMode = "labels";
-  selectPart(best.part.name, { focus: false });
+  selectPart(best.part.name, { focus: false, inspectorTab: "archive" });
 }
 
 function exportCurrentModel() {
@@ -2072,15 +3080,99 @@ function showToast(message) {
 function bindEvents() {
   els.topNavButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      openPanel(button.dataset.panel);
+      const nav = button.dataset.nav;
+      if (nav === "gallery") {
+        showGalleryHome();
+        return;
+      }
+      if (nav === "showcase") {
+        enterExplorer(state.cellIndex, { toastMessage: "已进入 3D 展示模块" });
+        return;
+      }
+      if (nav === "settings") {
+        openSettingsModal();
+        return;
+      }
+      if (state.screen !== "explore") enterExplorer(state.cellIndex);
+      if (nav === "library" || nav === "notes") openPanel(nav);
     });
   });
 
   els.drawerClose?.addEventListener("click", closePanel);
   els.drawerBackdrop?.addEventListener("click", closePanel);
+  els.settingsClose?.addEventListener("click", closeSettingsModal);
+  els.settingsBackdrop?.addEventListener("click", closeSettingsModal);
+  els.materialBackdrop?.addEventListener("click", closeMaterialCard);
+  document.addEventListener("mousedown", handleMaterialOutsideClick);
+  els.hallSearchInput?.addEventListener("input", () => {
+    state.hallSearch = els.hallSearchInput.value;
+    renderSpecimenHall();
+    if (window.lucide) window.lucide.createIcons();
+  });
+  els.guideButton?.addEventListener("click", () => openOnboardingPrompt({ force: true }));
+  els.showcaseEntryButton?.addEventListener("click", () => {
+    enterExplorer(state.cellIndex, { toastMessage: "已进入 3D 展示模块" });
+  });
+  els.onboardingClose?.addEventListener("click", () => closeOnboardingPrompt({ markSeen: true }));
+  els.onboardingBackdrop?.addEventListener("click", () => closeOnboardingPrompt({ markSeen: true }));
+  els.onboardingStay?.addEventListener("click", () => closeOnboardingPrompt({ markSeen: true }));
+  els.onboardingStart?.addEventListener("click", () => {
+    enterExplorer(state.cellIndex, { toastMessage: "已进入 3D 展示模块" });
+  });
+  els.specimenUploadInput?.addEventListener("change", () => {
+    const file = els.specimenUploadInput.files?.[0];
+    handleSpecimenUpload(file);
+    els.specimenUploadInput.value = "";
+  });
+  els.evidenceLaunchButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      openEvidenceModal(button.dataset.evidenceOpen || "micro");
+    });
+  });
+  els.inspectorTabs?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-inspector-tab]");
+    if (button && els.inspectorTabs.contains(button)) {
+      state.inspectorTab = normalizeInspectorTab(button.dataset.inspectorTab);
+      updateDetail();
+      if (state.inspectorTab === "evidence") renderEvidenceContent();
+      showToast(button.textContent.trim());
+    }
+  });
+  els.evidenceModalClose?.addEventListener("click", closeEvidenceModal);
+  els.evidenceModalBackdrop?.addEventListener("click", closeEvidenceModal);
+  els.evidenceTabs?.querySelectorAll("[data-evidence-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.evidenceTab = button.dataset.evidenceTab;
+      renderEvidenceContent();
+      renderOrganelleList();
+      updateProgress();
+      if (window.lucide) window.lucide.createIcons();
+    });
+  });
+  els.evidenceCollapse?.addEventListener("click", () => {
+    els.evidenceContent?.classList.toggle("is-collapsed");
+    els.evidenceCollapse.classList.toggle("is-collapsed");
+  });
 
   window.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !els.drawer.hidden) closePanel();
+    if (event.key !== "Escape") return;
+    if (els.evidenceModal && !els.evidenceModal.hidden) {
+      closeEvidenceModal();
+      return;
+    }
+    if (els.materialCard && !els.materialCard.hidden) {
+      closeMaterialCard();
+      return;
+    }
+    if (els.onboardingPrompt && !els.onboardingPrompt.hidden) {
+      closeOnboardingPrompt({ markSeen: true });
+      return;
+    }
+    if (els.settingsModal && !els.settingsModal.hidden) {
+      closeSettingsModal();
+      return;
+    }
+    if (!els.drawer.hidden) closePanel();
   });
 
   document.querySelectorAll(".mode-button").forEach((button) => {
@@ -2100,20 +3192,18 @@ function bindEvents() {
     });
   });
 
-  els.crossToggle.addEventListener("change", () => {
-    state.crossSection = els.crossToggle.checked;
-    if (state.crossSection) {
-      state.viewMode = "model";
-      state.autoRotate = false;
-      if (modelGroup) modelGroup.rotation.y = 0;
-    }
+  els.labelsButton?.addEventListener("click", () => {
+    state.viewMode = state.viewMode === "labels" ? "model" : "labels";
+    updateHeader();
     updateToolbar();
-    showToast(state.crossSection ? "剖切参考已开启" : "剖切参考已关闭");
+    updateLabels();
+    showToast(state.viewMode === "labels" ? "结构标签已显示" : "结构标签已隐藏");
   });
 
   els.rotateButton.addEventListener("click", () => {
     state.autoRotate = !state.autoRotate;
     updateToolbar();
+    showToast(state.autoRotate ? "自动旋转已恢复" : "自动旋转已暂停");
   });
 
   els.stagePrevButton.addEventListener("click", () => {
@@ -2127,35 +3217,32 @@ function bindEvents() {
   els.isolateButton.addEventListener("click", () => {
     state.isolate = !state.isolate;
     if (state.isolate) {
-      state.dimOthers = false;
-      state.viewMode = "labels";
       focusSelectedPart();
       showToast(`已聚焦${selectedPartData().name}`);
     } else {
+      restoreCameraView();
       showToast("已退出聚焦");
     }
     updateToolbar();
-    updateModelMaterials();
   });
 
   els.hideButton.addEventListener("click", () => {
     state.dimOthers = !state.dimOthers;
+    state.layerRenderMode = "gray";
     if (state.dimOthers) {
-      state.isolate = false;
-      state.viewMode = "labels";
-      focusSelectedPart();
-      showToast("已弱化背景并显示结构标注");
+      showToast("灰模显示已开启");
     } else {
-      showToast("已恢复舞台显示");
+      showToast("灰模显示已关闭");
     }
     updateToolbar();
     updateModelMaterials();
   });
 
   els.resetButton.addEventListener("click", () => {
-    resetObservationState({ resetPart: false, resetMicro: false });
+    state.isolate = false;
+    restoreCameraView();
     updateToolbar();
-    showToast("视角和观察模式已复位");
+    showToast("视角已复位");
   });
 
   els.screenshotButton.addEventListener("click", () => {
@@ -2234,63 +3321,6 @@ function updateSplitAnimation() {
   updateSplitPlanes();
 }
 
-function easeOutCubic(t) {
-  return 1 - Math.pow(1 - t, 3);
-}
-
-function easeInCubic(t) {
-  return t * t * t;
-}
-
-function finishStageEnter() {
-  if (modelGroup) {
-    modelGroup.position.set(0, 0, 0);
-    modelGroup.rotation.x = 0;
-    modelGroup.rotation.z = 0;
-  }
-  state.isStageSwitching = false;
-  stageSwitch.phase = "idle";
-  stageSwitch.pendingIndex = null;
-  els.canvasWrap.removeAttribute("data-switch-direction");
-  updateCellSwitchControls();
-  updateToolbar();
-}
-
-function finishStageExit() {
-  const nextIndex = stageSwitch.pendingIndex;
-  const direction = stageSwitch.direction;
-  stageSwitch.phase = "waiting-enter";
-  stageSwitch.startedAt = performance.now();
-  state.cellIndex = nextIndex;
-  resetObservationState();
-  stageSwitch.direction = direction;
-  updateAll();
-  showToast(`已切换到${currentCell().title}`);
-}
-
-function applyStageSwitchMotion(now, baseScale) {
-  if (!modelGroup || stageSwitch.phase === "idle" || stageSwitch.phase === "waiting-enter") return false;
-  const t = Math.min(1, (now - stageSwitch.startedAt) / stageSwitch.duration);
-  const entering = stageSwitch.phase === "enter";
-  const eased = entering ? easeOutCubic(t) : easeInCubic(t);
-  const slideDistance = getStageSlideDistance(baseScale);
-  const x = entering
-    ? stageSwitch.direction * (1 - eased) * slideDistance
-    : -stageSwitch.direction * eased * slideDistance;
-  modelGroup.position.set(x, 0, 0);
-  modelGroup.rotation.x = 0;
-  modelGroup.rotation.z = 0;
-  modelGroup.scale.setScalar(baseScale);
-  if (t >= 1) {
-    if (stageSwitch.phase === "exit") {
-      finishStageExit();
-    } else {
-      finishStageEnter();
-    }
-  }
-  return true;
-}
-
 function animate(now) {
   requestAnimationFrame(animate);
   const elapsed = now - rebuildStart;
@@ -2300,20 +3330,10 @@ function animate(now) {
     const eased = 1 - Math.pow(1 - enter, 3);
     const introScale = stageSwitch.phase === "idle" ? 0.82 + eased * 0.18 : 1;
     const baseScale = targetScale * introScale;
-    const stageMotionApplied = applyStageSwitchMotion(now, baseScale);
-    if (!modelGroup) {
-      updateCameraTween(now);
-      controls.update();
-      positionLabels();
-      renderer.render(scene, camera);
-      return;
-    }
-    if (!stageMotionApplied) {
-      modelGroup.position.set(0, 0, 0);
-      modelGroup.rotation.x = 0;
-      modelGroup.rotation.z = 0;
-      modelGroup.scale.setScalar(baseScale);
-    }
+    modelGroup.position.set(0, 0, 0);
+    modelGroup.rotation.x = 0;
+    modelGroup.rotation.z = 0;
+    modelGroup.scale.setScalar(baseScale);
     if (state.autoRotate && !state.crossSection && stageSwitch.phase === "idle") modelGroup.rotation.y += 0.004;
     updateSplitAnimation();
     updateSplitCamera();
@@ -2331,6 +3351,7 @@ function animate(now) {
 bindEvents();
 updateAll();
 resize();
+openOnboardingPrompt();
 document.body.classList.add("app-ready");
 document.querySelector("#boot-status")?.setAttribute("hidden", "");
 requestAnimationFrame(animate);
